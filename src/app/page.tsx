@@ -4,7 +4,6 @@ import React from "react";
 import Link from "next/link";
 import { Info } from "lucide-react";
 import StatCard from "@/components/dashboard/StatCard";
-import LiveThreatFeed from "@/components/dashboard/LiveThreatFeed";
 import TopScamCategories from "@/components/dashboard/TopScamCategories";
 import ThreatAnalyticsCharts from "@/components/dashboard/ThreatAnalyticsCharts";
 import RecentThreatTable from "@/components/dashboard/RecentThreatTable";
@@ -45,12 +44,7 @@ export default function HomeDashboardPage() {
           </div>
         </section>
 
-        {/* 2. LIVE THREAT FEED */}
-        <section className="pt-2">
-          <LiveThreatFeed columns={2} />
-        </section>
-
-        {/* 3. TOP INDIAN SCAM CATEGORIES */}
+        {/* 2. TOP INDIAN SCAM CATEGORIES */}
         <section className="pt-2">
           <TopScamCategories />
         </section>
