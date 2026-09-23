@@ -11,10 +11,10 @@ import { DASHBOARD_KPIS } from "@/data/dashboardDemoData";
 
 export default function HomeDashboardPage() {
   return (
-    <div className="bg-[#070a0f] text-slate-100 min-h-screen py-8">
+    <div className="bg-[#07192f] bg-gradient-to-b from-[#0a2540] via-[#07192f] to-[#040e1b] text-slate-100 min-h-screen py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 w-full">
         {/* Top Welcome & Sub-Header */}
-        <div className="pb-4 border-b border-slate-800/80">
+        <div className="pb-4 border-b border-blue-900/40">
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
@@ -60,7 +60,7 @@ export default function HomeDashboardPage() {
         </section>
 
         {/* 5. PLATFORM DISCLAIMER & NOTICE */}
-        <section className="p-4 rounded-2xl bg-slate-950/70 border border-slate-850 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs font-mono text-slate-500">
+        <section className="p-4 rounded-2xl bg-[#040e1b]/80 border border-blue-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs font-mono text-slate-400">
           <div className="flex items-center gap-2">
             <Info className="w-4 h-4 text-cyan-400 shrink-0" />
             <span>
