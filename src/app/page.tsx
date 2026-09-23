@@ -11,25 +11,25 @@ import { DASHBOARD_KPIS } from "@/data/dashboardDemoData";
 
 export default function HomeDashboardPage() {
   return (
-    <div className="bg-[#07192f] bg-gradient-to-b from-[#0a2540] via-[#07192f] to-[#040e1b] text-slate-100 min-h-screen py-8">
+    <div className="bg-slate-50 text-slate-900 min-h-screen py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 w-full">
         {/* Top Welcome & Sub-Header */}
-        <div className="pb-4 border-b border-blue-900/40">
+        <div className="pb-4 border-b border-slate-200">
           <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-              <span className="text-xs font-mono uppercase tracking-widest text-cyan-400 font-bold">
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
+              <span className="text-xs font-mono uppercase tracking-widest text-amber-700 font-bold">
                 INDIA OPERATIONS SECTOR
               </span>
-              <span className="text-slate-600">•</span>
-              <span className="text-xs font-mono text-slate-400">
+              <span className="text-slate-300">•</span>
+              <span className="text-xs font-mono text-slate-500 font-semibold">
                 NATIONAL THREAT HORIZON
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight flex items-center gap-3">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#0a2540] tracking-tight flex items-center gap-3">
               <span>India Cyber Threat Intelligence Dashboard</span>
             </h1>
-            <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-3xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-3xl leading-relaxed">
               Continuous surveillance of digital arrest extortion, UPI collect fraud, banking phishing portals, fake job tasks, and malicious infrastructure targeting Indian citizens.
             </p>
           </div>
@@ -60,19 +60,19 @@ export default function HomeDashboardPage() {
         </section>
 
         {/* 5. PLATFORM DISCLAIMER & NOTICE */}
-        <section className="p-4 rounded-2xl bg-[#040e1b]/80 border border-blue-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs font-mono text-slate-400">
+        <section className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs font-mono text-slate-500">
           <div className="flex items-center gap-2">
-            <Info className="w-4 h-4 text-cyan-400 shrink-0" />
+            <Info className="w-4 h-4 text-amber-500 shrink-0" />
             <span>
               <strong>Disclaimer:</strong> ScamLens is an independent community cyber threat intelligence and research platform. Data is demonstrative/crowd-sourced and does not claim official Indian government agency affiliation.
             </span>
           </div>
           <div className="flex items-center gap-3 shrink-0">
-            <Link href="/threat-intelligence" className="text-cyan-400 hover:underline">
+            <Link href="/threat-intelligence" className="text-amber-600 hover:text-amber-700 hover:underline font-semibold">
               Heuristic Crawler
             </Link>
-            <span className="text-slate-700">•</span>
-            <Link href="/learn" className="text-cyan-400 hover:underline">
+            <span className="text-slate-300">•</span>
+            <Link href="/learn" className="text-amber-600 hover:text-amber-700 hover:underline font-semibold">
               Safety Guides
             </Link>
           </div>

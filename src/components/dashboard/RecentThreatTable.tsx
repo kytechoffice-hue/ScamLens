@@ -53,54 +53,54 @@ export default function RecentThreatTable() {
   const getRiskBadge = (risk: RecentThreatRecord["riskLevel"]) => {
     switch (risk) {
       case "Critical":
-        return "bg-rose-950/80 text-rose-400 border-rose-800/80";
+        return "bg-red-50 text-red-700 border-red-200";
       case "High":
-        return "bg-amber-950/80 text-amber-400 border-amber-800/80";
+        return "bg-amber-50 text-amber-800 border-amber-200";
       case "Medium":
-        return "bg-cyan-950/80 text-cyan-400 border-cyan-800/80";
+        return "bg-blue-50 text-blue-700 border-blue-200";
       default:
-        return "bg-slate-900 text-slate-400 border-slate-700";
+        return "bg-slate-100 text-slate-700 border-slate-200";
     }
   };
 
   const getStatusBadge = (status: RecentThreatRecord["status"]) => {
     switch (status) {
       case "Confirmed Fraud":
-        return "bg-rose-950/60 text-rose-300 border-rose-900/60";
+        return "bg-red-50 text-red-700 border-red-200";
       case "Escalated":
-        return "bg-purple-950/60 text-purple-300 border-purple-900/60";
+        return "bg-purple-50 text-purple-700 border-purple-200";
       case "Under Review":
-        return "bg-amber-950/60 text-amber-300 border-amber-900/60";
+        return "bg-amber-50 text-amber-800 border-amber-200";
       case "Mitigated":
-        return "bg-emerald-950/60 text-emerald-300 border-emerald-900/60";
+        return "bg-emerald-50 text-emerald-700 border-emerald-200";
     }
   };
 
   return (
-    <div className="p-5 sm:p-6 rounded-3xl bg-[#0c131f]/90 border border-slate-800 shadow-2xl space-y-4">
+    <div className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/90 shadow-xs space-y-4">
       {/* Table Header & Controls */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="w-2 h-2 rounded-full bg-cyan-400" />
-            <span className="text-xs font-mono uppercase tracking-widest text-cyan-400 font-bold">
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="w-2 h-2 rounded-full bg-amber-500" />
+            <span className="text-xs font-mono uppercase tracking-widest text-amber-700 font-bold">
               SECURITY AUDIT LOG
             </span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+          <h2 className="text-xl sm:text-2xl font-black text-[#0a2540] tracking-tight">
             Recently Flagged Threats
           </h2>
         </div>
 
         {/* Search Input Filter */}
         <div className="relative w-full md:w-80">
-          <Search className="w-4 h-4 text-cyan-400/70 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
             value={searchFilter}
             onChange={(e) => setSearchFilter(e.target.value)}
             placeholder="Filter threat ID, target, or location..."
-            className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-950/80 border border-slate-800 text-slate-200 placeholder:text-slate-500 text-xs font-mono focus:border-cyan-500 focus:outline-none"
+            className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 placeholder:text-slate-400 text-xs font-mono focus:border-amber-500 focus:outline-none"
           />
         </div>
       </div>
@@ -109,7 +109,7 @@ export default function RecentThreatTable() {
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse text-xs font-mono">
           <thead>
-            <tr className="border-b border-slate-800 text-[11px] text-slate-400 uppercase tracking-wider bg-slate-950/40">
+            <tr className="border-b border-slate-200 text-[11px] text-slate-500 uppercase tracking-wider bg-slate-50/70">
               <th className="py-3 px-3">Threat ID</th>
               <th className="py-3 px-3">Type</th>
               <th className="py-3 px-3">Target / Indicator</th>
@@ -120,32 +120,32 @@ export default function RecentThreatTable() {
               <th className="py-3 px-3 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/70 text-slate-300">
+          <tbody className="divide-y divide-slate-100 text-slate-700">
             {filteredThreats.map((row) => {
               const isWatchlisted = watchlist.includes(row.threatId);
 
               return (
                 <tr
                   key={row.threatId}
-                  className="hover:bg-slate-900/60 transition-colors group"
+                  className="hover:bg-amber-50/30 transition-colors group"
                 >
                   {/* Threat ID */}
-                  <td className="py-3.5 px-3 font-bold text-cyan-400">
+                  <td className="py-3.5 px-3 font-bold text-amber-700">
                     {row.threatId}
                   </td>
 
                   {/* Type */}
-                  <td className="py-3.5 px-3 text-slate-200 font-semibold">
+                  <td className="py-3.5 px-3 text-slate-900 font-semibold">
                     {row.type}
                   </td>
 
                   {/* Target */}
-                  <td className="py-3.5 px-3 text-slate-300 max-w-[200px] truncate" title={row.target}>
+                  <td className="py-3.5 px-3 text-slate-700 max-w-[200px] truncate" title={row.target}>
                     {row.target}
                   </td>
 
                   {/* Location */}
-                  <td className="py-3.5 px-3 text-slate-400 whitespace-nowrap">
+                  <td className="py-3.5 px-3 text-slate-500 whitespace-nowrap">
                     📍 {row.location}
                   </td>
 
@@ -157,7 +157,7 @@ export default function RecentThreatTable() {
                   </td>
 
                   {/* Reported Time */}
-                  <td className="py-3.5 px-3 text-slate-400 whitespace-nowrap">
+                  <td className="py-3.5 px-3 text-slate-500 whitespace-nowrap">
                     {row.reportedAgo}
                   </td>
 
@@ -173,7 +173,7 @@ export default function RecentThreatTable() {
                     <div className="flex items-center justify-end gap-1.5">
                       <button
                         onClick={() => setSelectedThreatModal(row)}
-                        className="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-750 transition-colors"
+                        className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors"
                         title="View Incident Telemetry"
                       >
                         <Eye className="w-3.5 h-3.5" />
@@ -181,7 +181,7 @@ export default function RecentThreatTable() {
 
                       <Link
                         href={`/check?q=${encodeURIComponent(row.target)}`}
-                        className="p-1.5 rounded-lg bg-cyan-950/80 hover:bg-cyan-900 text-cyan-300 border border-cyan-800/60 transition-colors"
+                        className="p-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 transition-colors"
                         title="Investigate with Scanner"
                       >
                         <ExternalLink className="w-3.5 h-3.5" />
@@ -191,8 +191,8 @@ export default function RecentThreatTable() {
                         onClick={() => toggleWatchlist(row.threatId)}
                         className={`p-1.5 rounded-lg border transition-colors ${
                           isWatchlisted
-                            ? "bg-amber-950 text-amber-400 border-amber-700"
-                            : "bg-slate-900 text-slate-400 hover:text-amber-400 border-slate-750"
+                            ? "bg-amber-100 text-amber-900 border-amber-300"
+                            : "bg-slate-100 text-slate-500 hover:text-amber-700 border-slate-200"
                         }`}
                         title={isWatchlisted ? "Remove from Watchlist" : "Add to Watchlist"}
                       >
@@ -209,73 +209,73 @@ export default function RecentThreatTable() {
 
       {/* Forensic Inspection Modal */}
       {selectedThreatModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in-50 duration-150">
-          <div className="bg-[#0e1624] border border-slate-750 rounded-3xl max-w-xl w-full p-6 shadow-2xl space-y-5 text-slate-200">
-            <div className="flex items-start justify-between pb-3 border-b border-slate-800">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in-50 duration-150">
+          <div className="bg-white border border-slate-200 rounded-3xl max-w-xl w-full p-6 shadow-2xl space-y-5 text-slate-800">
+            <div className="flex items-start justify-between pb-3 border-b border-slate-100">
               <div>
-                <span className="text-[10px] font-mono text-cyan-400 uppercase tracking-widest block mb-1">
+                <span className="text-[10px] font-mono text-amber-700 uppercase tracking-widest block mb-1 font-semibold">
                   INCIDENT INVESTIGATION DOSSIER
                 </span>
-                <h3 className="text-xl font-black text-white">
+                <h3 className="text-xl font-black text-[#0a2540]">
                   {selectedThreatModal.threatId} — {selectedThreatModal.type}
                 </h3>
               </div>
               <button
                 onClick={() => setSelectedThreatModal(null)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <div className="space-y-3 font-mono text-xs">
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
                 <div>
                   <span className="text-[10px] text-slate-500 block">Flagged Target / Indicator:</span>
-                  <span className="text-sm font-bold text-rose-400 break-all">
+                  <span className="text-sm font-bold text-rose-600 break-all">
                     {selectedThreatModal.target}
                   </span>
                 </div>
                 <button
                   onClick={() => handleCopy(selectedThreatModal.target)}
-                  className="p-2 rounded-lg bg-slate-900 hover:bg-slate-850 text-slate-400 hover:text-white border border-slate-800 transition-colors ml-2 shrink-0"
+                  className="p-2 rounded-lg bg-white hover:bg-slate-100 text-slate-500 hover:text-slate-800 border border-slate-200 transition-colors ml-2 shrink-0"
                   title="Copy indicator"
                 >
-                  {copiedIndicator ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                  {copiedIndicator ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
                 </button>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
                   <span className="text-[10px] text-slate-500 block">Origin Location</span>
-                  <span className="text-sm font-bold text-white">📍 {selectedThreatModal.location}</span>
+                  <span className="text-sm font-bold text-slate-900">📍 {selectedThreatModal.location}</span>
                 </div>
-                <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
                   <span className="text-[10px] text-slate-500 block">Risk Evaluation</span>
-                  <span className={`text-sm font-bold ${selectedThreatModal.riskLevel === "Critical" ? "text-rose-400" : "text-amber-400"}`}>
+                  <span className={`text-sm font-bold ${selectedThreatModal.riskLevel === "Critical" ? "text-rose-600" : "text-amber-700"}`}>
                     {selectedThreatModal.riskLevel} SEVERITY
                   </span>
                 </div>
               </div>
 
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
-                <span className="text-[10px] text-slate-500 block mb-1">Operational Status</span>
-                <p className="text-slate-300">
-                  Current Workflow: <strong>{selectedThreatModal.status}</strong>. Indicator has been synchronized across ScamLens automated browser heuristics and reported to collaborative defense networks.
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                <span className="text-[10px] text-slate-500 block mb-1 font-semibold">Operational Status</span>
+                <p className="text-slate-600 leading-relaxed">
+                  Current Workflow: <strong className="text-slate-900">{selectedThreatModal.status}</strong>. Indicator has been synchronized across ScamLens automated browser heuristics and reported to collaborative defense networks.
                 </p>
               </div>
             </div>
 
-            <div className="pt-4 border-t border-slate-800 flex items-center justify-between gap-3">
+            <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
               <Link
                 href="/report"
-                className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-850 text-slate-300 text-xs font-mono border border-slate-750 transition-colors"
+                className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-mono font-semibold border border-slate-200 transition-colors"
               >
                 Submit Supplemental Evidence
               </Link>
               <Link
                 href={`/check?q=${encodeURIComponent(selectedThreatModal.target)}`}
-                className="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-mono font-bold flex items-center gap-1.5 shadow-md shadow-cyan-500/20 transition-all"
+                className="px-4 py-2 rounded-xl bg-gradient-to-r from-red-500 to-rose-600 hover:opacity-95 text-white text-xs font-mono font-bold flex items-center gap-1.5 shadow-md shadow-red-500/15 transition-all"
               >
                 <span>Launch Full Scanner</span>
                 <ExternalLink className="w-3.5 h-3.5" />
