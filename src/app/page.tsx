@@ -44,22 +44,22 @@ export default function HomeDashboardPage() {
           </div>
         </section>
 
-        {/* 2. TOP INDIAN SCAM CATEGORIES */}
-        <section className="pt-2">
-          <TopScamCategories />
-        </section>
-
-        {/* 4. THREAT ANALYTICS & SEVERITY */}
+        {/* 2. THREAT ANALYTICS & SEVERITY */}
         <section className="pt-2">
           <ThreatAnalyticsCharts />
         </section>
 
-        {/* 5. RECENT THREAT TABLE */}
+        {/* 3. TOP INDIAN SCAM CATEGORIES */}
+        <section className="pt-2">
+          <TopScamCategories />
+        </section>
+
+        {/* 4. RECENT THREAT TABLE */}
         <section className="pt-2">
           <RecentThreatTable />
         </section>
 
-        {/* 6. PLATFORM DISCLAIMER & NOTICE */}
+        {/* 5. PLATFORM DISCLAIMER & NOTICE */}
         <section className="p-4 rounded-2xl bg-slate-950/70 border border-slate-850 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs font-mono text-slate-500">
           <div className="flex items-center gap-2">
             <Info className="w-4 h-4 text-cyan-400 shrink-0" />
