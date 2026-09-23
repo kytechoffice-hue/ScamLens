@@ -16,7 +16,11 @@ import {
 } from "lucide-react";
 import { LIVE_INDIA_THREAT_FEED, LiveThreatItem } from "@/data/dashboardDemoData";
 
-export default function LiveThreatFeed() {
+interface LiveThreatFeedProps {
+  columns?: 1 | 2 | 3;
+}
+
+export default function LiveThreatFeed({ columns = 1 }: LiveThreatFeedProps) {
   const [filterSeverity, setFilterSeverity] = useState<"ALL" | "CRITICAL" | "HIGH" | "MEDIUM" | "LOW">("ALL");
   const [feedItems, setFeedItems] = useState<LiveThreatItem[]>(LIVE_INDIA_THREAT_FEED);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -121,62 +125,64 @@ export default function LiveThreatFeed() {
       </div>
 
       {/* Feed List */}
-      <div className="flex-1 overflow-y-auto space-y-2.5 pr-1 max-h-[580px]">
-        {filteredItems.map((item) => (
-          <div
-            key={item.id}
-            className="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-850 hover:border-slate-700 transition-all hover:bg-slate-900/60 group"
-          >
-            {/* Top row: Time + Category + Severity */}
-            <div className="flex items-center justify-between gap-2 text-[10px] font-mono mb-1.5">
-              <div className="flex items-center gap-1.5 text-slate-400">
-                <Clock className="w-3 h-3 text-cyan-400" />
-                <span>{item.time} IST</span>
-                <span className="text-slate-600">•</span>
-                <span className="text-slate-500 font-semibold">{item.id}</span>
-              </div>
-              <span className={`px-2 py-0.5 rounded text-[9px] font-mono font-black uppercase tracking-wider ${getSeverityBadge(item.severity)}`}>
-                {item.severity}
-              </span>
-            </div>
-
-            {/* Threat Type Title */}
-            <h4 className="text-xs sm:text-sm font-bold text-slate-100 group-hover:text-cyan-300 transition-colors">
-              {item.threatType}
-            </h4>
-
-            {/* Description */}
-            <p className="text-xs text-slate-400 line-clamp-2 mt-1 leading-relaxed">
-              {item.description}
-            </p>
-
-            {/* Indicator Target */}
-            <div className="mt-2 p-1.5 rounded-lg bg-slate-900/90 border border-slate-800 text-[11px] font-mono text-cyan-400 truncate">
-              Target: <span className="text-slate-200">{item.target}</span>
-            </div>
-
-            {/* Bottom Row: Location + Status + Deep Link */}
-            <div className="mt-2.5 pt-2 border-t border-slate-850 flex items-center justify-between text-[10px] font-mono">
-              <span className="text-slate-400 flex items-center gap-1">
-                <MapPin className="w-3 h-3 text-rose-400" />
-                <span>{item.location}</span>
-              </span>
-
-              <div className="flex items-center gap-2">
-                <span className="text-slate-500 hidden sm:inline">
-                  [{item.status}]
+      <div className="flex-1 overflow-y-auto pr-1 max-h-[580px]">
+        <div className={columns === 2 ? "grid grid-cols-1 md:grid-cols-2 gap-3" : columns === 3 ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3" : "space-y-2.5"}>
+          {filteredItems.map((item) => (
+            <div
+              key={item.id}
+              className="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-850 hover:border-slate-700 transition-all hover:bg-slate-900/60 group"
+            >
+              {/* Top row: Time + Category + Severity */}
+              <div className="flex items-center justify-between gap-2 text-[10px] font-mono mb-1.5">
+                <div className="flex items-center gap-1.5 text-slate-400">
+                  <Clock className="w-3 h-3 text-cyan-400" />
+                  <span>{item.time} IST</span>
+                  <span className="text-slate-600">•</span>
+                  <span className="text-slate-500 font-semibold">{item.id}</span>
+                </div>
+                <span className={`px-2 py-0.5 rounded text-[9px] font-mono font-black uppercase tracking-wider ${getSeverityBadge(item.severity)}`}>
+                  {item.severity}
                 </span>
-                <Link
-                  href={`/check?q=${encodeURIComponent(item.target)}`}
-                  className="px-2 py-1 rounded-md bg-cyan-950/80 hover:bg-cyan-900 text-cyan-300 border border-cyan-700/50 flex items-center gap-1 font-semibold transition-colors"
-                >
-                  <span>Inspect</span>
-                  <ExternalLink className="w-2.5 h-2.5" />
-                </Link>
+              </div>
+
+              {/* Threat Type Title */}
+              <h4 className="text-xs sm:text-sm font-bold text-slate-100 group-hover:text-cyan-300 transition-colors">
+                {item.threatType}
+              </h4>
+
+              {/* Description */}
+              <p className="text-xs text-slate-400 line-clamp-2 mt-1 leading-relaxed">
+                {item.description}
+              </p>
+
+              {/* Indicator Target */}
+              <div className="mt-2 p-1.5 rounded-lg bg-slate-900/90 border border-slate-800 text-[11px] font-mono text-cyan-400 truncate">
+                Target: <span className="text-slate-200">{item.target}</span>
+              </div>
+
+              {/* Bottom Row: Location + Status + Deep Link */}
+              <div className="mt-2.5 pt-2 border-t border-slate-850 flex items-center justify-between text-[10px] font-mono">
+                <span className="text-slate-400 flex items-center gap-1">
+                  <MapPin className="w-3 h-3 text-rose-400" />
+                  <span>{item.location}</span>
+                </span>
+
+                <div className="flex items-center gap-2">
+                  <span className="text-slate-500 hidden sm:inline">
+                    [{item.status}]
+                  </span>
+                  <Link
+                    href={`/check?q=${encodeURIComponent(item.target)}`}
+                    className="px-2 py-1 rounded-md bg-cyan-950/80 hover:bg-cyan-900 text-cyan-300 border border-cyan-700/50 flex items-center gap-1 font-semibold transition-colors"
+                  >
+                    <span>Inspect</span>
+                    <ExternalLink className="w-2.5 h-2.5" />
+                  </Link>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
       {/* Bottom Summary Bar */}
