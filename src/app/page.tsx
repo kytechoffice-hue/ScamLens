@@ -2,20 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { 
-  ShieldAlert, 
-  Activity, 
-  Search, 
-  ArrowRight, 
-  PlusCircle, 
-  Info, 
-  Radio, 
-  Lock, 
-  ExternalLink,
-  Zap,
-  Globe2,
-  Database
-} from "lucide-react";
+import { Info } from "lucide-react";
 import StatCard from "@/components/dashboard/StatCard";
 import IndiaThreatMap from "@/components/dashboard/IndiaThreatMap";
 import LiveThreatFeed from "@/components/dashboard/LiveThreatFeed";
@@ -29,7 +16,7 @@ export default function HomeDashboardPage() {
     <div className="bg-[#070a0f] text-slate-100 min-h-screen py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 w-full">
         {/* Top Welcome & Sub-Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800/80">
+        <div className="pb-4 border-b border-slate-800/80">
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
@@ -47,33 +34,6 @@ export default function HomeDashboardPage() {
             <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-3xl leading-relaxed">
               Continuous surveillance of digital arrest extortion, UPI collect fraud, banking phishing portals, fake job tasks, and malicious infrastructure targeting Indian citizens.
             </p>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex flex-wrap items-center gap-2.5 self-start md:self-auto shrink-0">
-            <Link
-              href="/threat-intelligence"
-              className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-850 text-cyan-400 hover:text-cyan-300 text-xs font-mono font-semibold border border-slate-750 transition-colors flex items-center gap-1.5 shadow-xs"
-            >
-              <ShieldAlert className="w-4 h-4 text-cyan-400" />
-              <span>Threat Matrix</span>
-            </Link>
-
-            <Link
-              href="/check"
-              className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-850 text-slate-200 hover:text-white text-xs font-mono font-semibold border border-slate-750 transition-colors flex items-center gap-1.5 shadow-xs"
-            >
-              <Search className="w-4 h-4 text-cyan-400" />
-              <span>Audit Indicator</span>
-            </Link>
-
-            <Link
-              href="/report"
-              className="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-mono font-bold transition-all flex items-center gap-1.5 shadow-md shadow-rose-600/20"
-            >
-              <PlusCircle className="w-4 h-4" />
-              <span>Report Scam</span>
-            </Link>
           </div>
         </div>
 
