@@ -1,7 +1,6 @@
 "use client";
 
-import React, { Suspense, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import React, { useState } from "react";
 import Link from "next/link";
 import { 
   User, 
@@ -27,13 +26,8 @@ import {
 import { APP_CONFIG, AppConfig } from "@/config/appConfig";
 import { encryptPayload, decryptPayload, EncryptedPackage } from "@/lib/crypto";
 
-function AccountContent() {
-  const searchParams = useSearchParams();
-  const tabParam = searchParams.get("tab");
-
-  const [activeTab, setActiveTab] = useState<"profile" | "settings" | "crypto">(
-    tabParam === "settings" ? "settings" : tabParam === "crypto" ? "crypto" : "profile"
-  );
+export default function AccountPage() {
+  const [activeTab, setActiveTab] = useState<"profile" | "settings" | "crypto">("profile");
 
   // Auth simulation state
   const [isLoggedIn, setIsLoggedIn] = useState(true);
@@ -41,19 +35,18 @@ function AccountContent() {
   const [userRole, setUserRole] = useState<"Community Sentinel" | "Security Analyst">("Security Analyst");
 
   // Global Environment State simulation (Dev vs Prod)
-  const [currentEnv, setCurrentEnv] = useState<"development" | "production">("production");
+  const [currentEnv, setCurrentEnv] = useState<"development" | "production">("development");
   const [mockDataActive, setMockDataActive] = useState(true);
-  const [strictWafActive, setStrictWafActive] = useState(true);
+  const [strictWafActive, setStrictWafActive] = useState(false);
 
   // Encryption Testbench State
   const [cryptoInput, setCryptoInput] = useState(
     JSON.stringify(
       {
-        target: "sbi-pan-kyc-verify-portal.top",
-        victim_phone: "+91-98210-XXXXX",
-        reported_loss_inr: 125000,
-        upi_reference: "UPI/CR/8492019482/YESB",
-        state: "Maharashtra",
+        target: "chase-auth-security-update9.cc",
+        victim_email: "victim@example.com",
+        evidence_loss_usd: 14500,
+        bank_wire_reference: "WIRE-89124-SECRET",
       },
       null,
       2
@@ -90,18 +83,18 @@ function AccountContent() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/70 border border-cyan-500/30 text-cyan-300 text-xs font-mono mb-2 font-semibold">
-            <User className="w-3.5 h-3.5 text-cyan-400" />
-            <span>OPERATIONS LAB & GLOBAL SETTINGS</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-800 text-xs font-mono mb-2 font-semibold">
+            <User className="w-3.5 h-3.5 text-blue-600" />
+            <span>ACCOUNT & GLOBAL SETTINGS</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-            Account & Operations Console
+          <h1 className="text-3xl sm:text-4xl font-black text-[#0a2540] tracking-tight">
+            Account & System Operations
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-slate-600 mt-1">
             Manage your reporter credentials, inspect submitted incidents, and test global Development/Production environment settings.
           </p>
         </div>
@@ -109,10 +102,10 @@ function AccountContent() {
         {/* Environment Badge */}
         <div className="flex items-center gap-2 font-mono text-xs">
           <span className="text-slate-500">Global Env:</span>
-          <span className={`px-2.5 py-1 rounded-lg font-bold uppercase border ${
+          <span className={`px-2.5 py-1 rounded-lg font-bold uppercase ${
             currentEnv === "production"
-              ? "bg-emerald-950 text-emerald-400 border-emerald-800"
-              : "bg-amber-950 text-amber-400 border-amber-800"
+              ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
+              : "bg-amber-100 text-amber-900 border border-amber-300"
           }`}>
             {currentEnv}
           </span>
@@ -120,41 +113,41 @@ function AccountContent() {
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-800 pb-2">
+      <div className="flex items-center gap-2 border-b border-slate-200 mb-8">
         <button
           onClick={() => setActiveTab("profile")}
-          className={`px-4 py-2.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer flex items-center gap-2 ${
+          className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer flex items-center gap-2 ${
             activeTab === "profile"
-              ? "bg-cyan-500 text-slate-950 shadow-xs"
-              : "text-slate-400 hover:text-white bg-slate-900 border border-slate-800"
+              ? "border-[#0a2540] text-[#0a2540]"
+              : "border-transparent text-slate-500 hover:text-slate-900"
           }`}
         >
           <User className="w-4 h-4" />
-          <span>Dashboard & Reports</span>
+          <span>Dashboard & My Reports</span>
         </button>
 
         <button
           onClick={() => setActiveTab("settings")}
-          className={`px-4 py-2.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer flex items-center gap-2 ${
+          className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer flex items-center gap-2 ${
             activeTab === "settings"
-              ? "bg-cyan-500 text-slate-950 shadow-xs"
-              : "text-slate-400 hover:text-white bg-slate-900 border border-slate-800"
+              ? "border-[#0a2540] text-[#0a2540]"
+              : "border-transparent text-slate-500 hover:text-slate-900"
           }`}
         >
           <Sliders className="w-4 h-4" />
-          <span>Global Settings</span>
+          <span>Global Settings (Dev / Prod)</span>
         </button>
 
         <button
           onClick={() => setActiveTab("crypto")}
-          className={`px-4 py-2.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer flex items-center gap-2 ${
+          className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer flex items-center gap-2 ${
             activeTab === "crypto"
-              ? "bg-cyan-500 text-slate-950 shadow-xs"
-              : "text-slate-400 hover:text-white bg-slate-900 border border-slate-800"
+              ? "border-[#0a2540] text-[#0a2540]"
+              : "border-transparent text-slate-500 hover:text-slate-900"
           }`}
         >
-          <Key className="w-4 h-4" />
-          <span>AES-256 Vault Lab</span>
+          <Key className="w-4 h-4 text-amber-500" />
+          <span>AES-256 Encryption Lab</span>
         </button>
       </div>
 
@@ -162,20 +155,20 @@ function AccountContent() {
       {activeTab === "profile" && (
         <div className="space-y-6">
           {/* User Profile Card */}
-          <div className="bg-[#0c131f]/90 rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-cyan-950/70 border border-cyan-800/60 text-cyan-400 flex items-center justify-center font-bold text-xl font-mono">
-                IN
+              <div className="w-14 h-14 rounded-2xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center font-bold text-xl font-mono">
+                SC
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-base sm:text-lg font-bold text-white">{userEmail}</h3>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-cyan-950 text-cyan-300 border border-cyan-800/80 font-bold">
+                  <h3 className="text-lg font-bold text-slate-900">{userEmail}</h3>
+                  <span className="px-2 py-0.5 rounded-full text-[11px] font-mono bg-blue-50 text-blue-700 border border-blue-200 font-bold">
                     {userRole}
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 mt-0.5 font-mono">
-                  Reputation Score: <strong className="text-emerald-400">98.5 / 100</strong> (14 verified submissions)
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Reputation Score: <strong className="text-emerald-600 font-mono">98.5 / 100</strong> (14 verified submissions)
                 </p>
               </div>
             </div>
@@ -183,13 +176,13 @@ function AccountContent() {
             <div className="flex items-center gap-3">
               <Link
                 href="/report"
-                className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-mono font-bold shadow-xs transition-all"
+                className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-red-500 to-rose-600 text-white text-xs font-bold shadow-xs hover:opacity-90 transition-all"
               >
                 + New Incident Report
               </Link>
               <button
                 onClick={() => setIsLoggedIn(!isLoggedIn)}
-                className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-850 border border-slate-800 text-slate-300 text-xs font-mono transition-all cursor-pointer"
+                className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-xs font-semibold transition-all cursor-pointer"
               >
                 {isLoggedIn ? "Simulate Logout" : "Log In"}
               </button>
@@ -197,18 +190,18 @@ function AccountContent() {
           </div>
 
           {/* User Submitted Incidents */}
-          <div className="bg-[#0c131f]/90 rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-xl space-y-4">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-white">
+              <h3 className="text-base font-bold text-slate-900">
                 My Submitted Scam Reports
               </h3>
-              <span className="text-xs text-slate-400 font-mono">3 Active Reports</span>
+              <span className="text-xs text-slate-500 font-mono">3 Active Reports</span>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs font-mono">
                 <thead>
-                  <tr className="border-b border-slate-800 bg-slate-950 text-slate-400">
+                  <tr className="border-b border-slate-200 bg-slate-50 text-slate-500">
                     <th className="py-3 px-4">Tracking ID</th>
                     <th className="py-3 px-4">Target Entity</th>
                     <th className="py-3 px-4">Category</th>
@@ -216,37 +209,37 @@ function AccountContent() {
                     <th className="py-3 px-4">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60 text-slate-300">
+                <tbody className="divide-y divide-slate-100">
                   <tr>
-                    <td className="py-3.5 px-4 font-bold text-cyan-400">SCM-IN-84920</td>
-                    <td className="py-3.5 px-4 text-rose-400 font-semibold">sbi-pan-kyc-verify-portal.top</td>
-                    <td className="py-3.5 px-4 text-slate-400">Phishing</td>
-                    <td className="py-3.5 px-4 text-slate-500">2026-09-22</td>
-                    <td className="py-3.5 px-4">
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-950 text-rose-300 border border-rose-800/80">
-                        CONFIRMED FRAUD
+                    <td className="py-3 px-4 font-bold text-[#0a2540]">SCAM-LENS-84920</td>
+                    <td className="py-3 px-4 text-rose-700 font-semibold">chase-auth-security-update9.cc</td>
+                    <td className="py-3 px-4 text-slate-600">Phishing</td>
+                    <td className="py-3 px-4 text-slate-500">2026-09-21</td>
+                    <td className="py-3 px-4">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        VERIFIED SCAM
                       </span>
                     </td>
                   </tr>
                   <tr>
-                    <td className="py-3.5 px-4 font-bold text-cyan-400">SCM-IN-71932</td>
-                    <td className="py-3.5 px-4 text-amber-400 font-semibold">paytm-refund-desk@ybl</td>
-                    <td className="py-3.5 px-4 text-slate-400">UPI Fraud</td>
-                    <td className="py-3.5 px-4 text-slate-500">2026-09-21</td>
-                    <td className="py-3.5 px-4">
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-950 text-amber-300 border border-amber-800/80">
+                    <td className="py-3 px-4 font-bold text-[#0a2540]">SCAM-LENS-71932</td>
+                    <td className="py-3 px-4 text-rose-700 font-semibold">apex-yield-ai-finance.top</td>
+                    <td className="py-3 px-4 text-slate-600">Crypto & Yield</td>
+                    <td className="py-3 px-4 text-slate-500">2026-09-20</td>
+                    <td className="py-3 px-4">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        VERIFIED SCAM
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 font-bold text-[#0a2540]">SCAM-LENS-90184</td>
+                    <td className="py-3 px-4 text-amber-700 font-semibold">+1 (888) 492-3819</td>
+                    <td className="py-3 px-4 text-slate-600">SMS Smishing</td>
+                    <td className="py-3 px-4 text-slate-500">2026-09-18</td>
+                    <td className="py-3 px-4">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
                         UNDER AUDIT
-                      </span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-3.5 px-4 font-bold text-cyan-400">SCM-IN-90184</td>
-                    <td className="py-3.5 px-4 text-slate-200 font-semibold">+91-98210-XXXXX</td>
-                    <td className="py-3.5 px-4 text-slate-400">FedEx SMS Contraband</td>
-                    <td className="py-3.5 px-4 text-slate-500">2026-09-19</td>
-                    <td className="py-3.5 px-4">
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-800/80">
-                        MITIGATED
                       </span>
                     </td>
                   </tr>
@@ -257,31 +250,32 @@ function AccountContent() {
         </div>
       )}
 
-      {/* TAB 2: GLOBAL SETTINGS */}
+      {/* TAB 2: GLOBAL SETTINGS (DEVELOPMENT VS PRODUCTION) */}
       {activeTab === "settings" && (
         <div className="space-y-6">
-          <div className="bg-[#0c131f]/90 rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-xl space-y-4">
+          {/* Environment Switcher Simulation */}
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h3 className="text-base sm:text-lg font-bold text-white">
-                  Active Runtime Environment & Hostinger Parameters
+                <h3 className="text-lg font-bold text-slate-900">
+                  Active Runtime Environment
                 </h3>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <p className="text-xs text-slate-500 mt-0.5">
                   Toggle parameters to test application behavior under Development and Production modes.
                 </p>
               </div>
 
-              <div className="flex items-center gap-2 p-1 rounded-xl bg-slate-950 border border-slate-800">
+              <div className="flex items-center gap-2 p-1 rounded-2xl bg-slate-100 border border-slate-200">
                 <button
                   onClick={() => {
                     setCurrentEnv("development");
                     setMockDataActive(true);
                     setStrictWafActive(false);
                   }}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
+                  className={`px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
                     currentEnv === "development"
-                      ? "bg-cyan-500 text-slate-950 shadow-xs"
-                      : "text-slate-400 hover:text-white"
+                      ? "bg-white text-[#0a2540] shadow-xs"
+                      : "text-slate-600 hover:text-slate-900"
                   }`}
                 >
                   Development
@@ -292,10 +286,10 @@ function AccountContent() {
                     setMockDataActive(false);
                     setStrictWafActive(true);
                   }}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
+                  className={`px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
                     currentEnv === "production"
-                      ? "bg-cyan-500 text-slate-950 shadow-xs"
-                      : "text-slate-400 hover:text-white"
+                      ? "bg-slate-900 text-white shadow-xs"
+                      : "text-slate-600 hover:text-slate-900"
                   }`}
                 >
                   Production
@@ -303,54 +297,55 @@ function AccountContent() {
               </div>
             </div>
 
+            {/* Matrix comparison table */}
             <div className="pt-4 overflow-x-auto">
               <table className="w-full text-left text-xs font-mono">
                 <thead>
-                  <tr className="border-b border-slate-800 bg-slate-950 text-slate-400">
+                  <tr className="border-b border-slate-200 bg-slate-50 text-slate-500">
                     <th className="py-3 px-4">Configuration Setting</th>
                     <th className="py-3 px-4">Development Setting</th>
                     <th className="py-3 px-4">Production Setting</th>
                     <th className="py-3 px-4">Current Active State</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60 text-slate-300">
+                <tbody className="divide-y divide-slate-100">
                   <tr>
-                    <td className="py-3.5 px-4 font-semibold text-white">API Route Base</td>
-                    <td className="py-3.5 px-4 text-slate-400">http://localhost:3000/api</td>
-                    <td className="py-3.5 px-4 text-slate-400">https://scamlens.kytechserv.com/api</td>
-                    <td className="py-3.5 px-4 text-cyan-400 font-bold">
-                      {currentEnv === "production" ? "https://scamlens.kytechserv.com/api" : "http://localhost:3000/api"}
+                    <td className="py-3.5 px-4 font-semibold text-slate-900">API Route Base</td>
+                    <td className="py-3.5 px-4 text-slate-500">http://localhost:3000/api</td>
+                    <td className="py-3.5 px-4 text-slate-500">https://scamlens.com/api</td>
+                    <td className="py-3.5 px-4 text-blue-700 font-bold">
+                      {currentEnv === "production" ? "https://scamlens.com/api" : "http://localhost:3000/api"}
                     </td>
                   </tr>
                   <tr>
-                    <td className="py-3.5 px-4 font-semibold text-white">Data Source Mode</td>
-                    <td className="py-3.5 px-4 text-slate-400">In-Memory Mock Dataset</td>
-                    <td className="py-3.5 px-4 text-slate-400">Hostinger MySQL (Prisma)</td>
-                    <td className="py-3.5 px-4 text-amber-400 font-bold">
+                    <td className="py-3.5 px-4 font-semibold text-slate-900">Data Source Mode</td>
+                    <td className="py-3.5 px-4 text-slate-500">In-Memory Mock Dataset</td>
+                    <td className="py-3.5 px-4 text-slate-500">Hostinger MySQL (Prisma)</td>
+                    <td className="py-3.5 px-4 text-amber-700 font-bold">
                       {mockDataActive ? "Mock Dataset Active" : "Hostinger MySQL Connected"}
                     </td>
                   </tr>
                   <tr>
-                    <td className="py-3.5 px-4 font-semibold text-white">Minification & SWC Optimization</td>
-                    <td className="py-3.5 px-4 text-slate-400">Disabled (Readable Bundles)</td>
-                    <td className="py-3.5 px-4 text-slate-400">Enabled (Gzip + Console Stripping)</td>
-                    <td className="py-3.5 px-4 text-emerald-400 font-bold">
+                    <td className="py-3.5 px-4 font-semibold text-slate-900">Minification & SWC Optimization</td>
+                    <td className="py-3.5 px-4 text-slate-500">Disabled (Readable Bundles)</td>
+                    <td className="py-3.5 px-4 text-slate-500">Enabled (Gzip + Console Stripping)</td>
+                    <td className="py-3.5 px-4 text-emerald-700 font-bold">
                       {currentEnv === "production" ? "Gzip & SWC Minified" : "Dev Debug Bundles"}
                     </td>
                   </tr>
                   <tr>
-                    <td className="py-3.5 px-4 font-semibold text-white">Hostinger WAF & Security Headers</td>
-                    <td className="py-3.5 px-4 text-slate-400">Permissive Localhost CORS</td>
-                    <td className="py-3.5 px-4 text-slate-400">Strict CSP, HSTS, Rate Limits</td>
-                    <td className="py-3.5 px-4 font-bold text-cyan-400">
+                    <td className="py-3.5 px-4 font-semibold text-slate-900">Hostinger WAF & Security Headers</td>
+                    <td className="py-3.5 px-4 text-slate-500">Permissive Localhost CORS</td>
+                    <td className="py-3.5 px-4 text-slate-500">Strict CSP, HSTS, Rate Limits</td>
+                    <td className="py-3.5 px-4 font-bold text-slate-800">
                       {strictWafActive ? "Strict WAF Active" : "Permissive Dev Mode"}
                     </td>
                   </tr>
                   <tr>
-                    <td className="py-3.5 px-4 font-semibold text-white">Evidence Encryption Key</td>
-                    <td className="py-3.5 px-4 text-slate-400">Local Dev Key Derived</td>
-                    <td className="py-3.5 px-4 text-slate-400">Environment Vault Secret</td>
-                    <td className="py-3.5 px-4 text-emerald-400 font-bold">AES-256-GCM Armed</td>
+                    <td className="py-3.5 px-4 font-semibold text-slate-900">Evidence Encryption Key</td>
+                    <td className="py-3.5 px-4 text-slate-500">Local Dev Key Derived</td>
+                    <td className="py-3.5 px-4 text-slate-500">Environment Vault Secret</td>
+                    <td className="py-3.5 px-4 text-emerald-700 font-bold">AES-256-GCM Armed</td>
                   </tr>
                 </tbody>
               </table>
@@ -359,33 +354,33 @@ function AccountContent() {
         </div>
       )}
 
-      {/* TAB 3: AES-256 ENCRYPTION LAB */}
+      {/* TAB 3: AES-256 ENCRYPTION & MINIFICATION TESTBENCH */}
       {activeTab === "crypto" && (
         <div className="space-y-6">
-          <div className="bg-[#0c131f]/90 rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-xl space-y-6">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
             <div>
-              <div className="flex items-center gap-2 text-cyan-400 text-xs font-mono font-bold uppercase mb-1">
+              <div className="flex items-center gap-2 text-amber-600 text-xs font-mono font-bold uppercase mb-1">
                 <Key className="w-4 h-4" />
                 <span>Web Crypto API (Native AES-256-GCM)</span>
               </div>
-              <h3 className="text-base sm:text-lg font-bold text-white">
+              <h3 className="text-lg font-bold text-slate-900">
                 Global Encryption & Minification Testbench
               </h3>
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-slate-500 mt-1">
                 Test encrypting sensitive scam incident data, victim identifiers, and financial records into compact, minified cipher packages.
               </p>
             </div>
 
             {/* Input payload */}
             <div>
-              <label className="block text-xs font-mono uppercase text-slate-400 font-bold mb-2">
+              <label className="block text-xs font-mono uppercase text-slate-700 font-bold mb-2">
                 1. Plaintext or JSON Incident Payload
               </label>
               <textarea
                 rows={5}
                 value={cryptoInput}
                 onChange={(e) => setCryptoInput(e.target.value)}
-                className="w-full px-4 py-3 rounded-2xl bg-slate-950 border border-slate-800 text-white font-mono text-xs focus:border-cyan-500 focus:outline-none"
+                className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 font-mono text-xs focus:border-amber-500 focus:bg-white focus:outline-none"
               />
             </div>
 
@@ -394,16 +389,16 @@ function AccountContent() {
               <button
                 onClick={handleEncrypt}
                 disabled={isEncrypting || !cryptoInput.trim()}
-                className="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-mono font-bold flex items-center gap-2 transition-all cursor-pointer disabled:opacity-50"
+                className="px-6 py-3 rounded-xl bg-[#0a2540] hover:bg-[#1e3a8a] text-white text-xs font-mono font-bold flex items-center gap-2 transition-all cursor-pointer disabled:opacity-50"
               >
-                {isEncrypting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
+                {isEncrypting ? <RefreshCw className="w-4 h-4 animate-spin text-amber-400" /> : <Lock className="w-4 h-4 text-amber-400" />}
                 <span>Encrypt with AES-256-GCM</span>
               </button>
 
               {encryptedOutput && (
                 <button
                   onClick={handleDecrypt}
-                  className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-mono font-bold flex items-center gap-2 transition-all cursor-pointer"
+                  className="px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-mono font-bold flex items-center gap-2 transition-all cursor-pointer"
                 >
                   <Key className="w-4 h-4" />
                   <span>Decrypt & Verify Integrity</span>
@@ -413,20 +408,20 @@ function AccountContent() {
 
             {/* Encrypted output view */}
             {encryptedOutput && (
-              <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-3 font-mono text-xs animate-in fade-in-50">
-                <div className="flex items-center justify-between text-slate-400 pb-2 border-b border-slate-800">
-                  <span className="font-bold text-white">Encrypted Package Output</span>
+              <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3 font-mono text-xs animate-in fade-in-50">
+                <div className="flex items-center justify-between text-slate-500 pb-2 border-b border-slate-200">
+                  <span className="font-bold text-slate-800">Encrypted Package Output</span>
                   <span>Algorithm: {encryptedOutput.algorithm}</span>
                 </div>
 
                 <div className="space-y-2">
                   <div>
-                    <span className="text-[10px] text-slate-500 block">Initialization Vector (IV):</span>
-                    <code className="text-cyan-400 font-bold break-all">{encryptedOutput.iv}</code>
+                    <span className="text-[11px] text-slate-500 block">Initialization Vector (IV):</span>
+                    <code className="text-blue-700 font-bold break-all">{encryptedOutput.iv}</code>
                   </div>
                   <div>
-                    <span className="text-[10px] text-slate-500 block">Minified Ciphertext:</span>
-                    <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-rose-300 font-bold break-all max-h-32 overflow-y-auto">
+                    <span className="text-[11px] text-slate-500 block">Minified Ciphertext:</span>
+                    <div className="p-2.5 rounded-lg bg-white border border-slate-200 text-rose-700 font-bold break-all max-h-32 overflow-y-auto">
                       {encryptedOutput.ciphertext}
                     </div>
                   </div>
@@ -440,7 +435,7 @@ function AccountContent() {
                       setCopied(true);
                       setTimeout(() => setCopied(false), 2000);
                     }}
-                    className="text-cyan-400 hover:underline font-bold cursor-pointer"
+                    className="text-amber-600 hover:text-amber-700 font-bold cursor-pointer"
                   >
                     {copied ? "Copied Package" : "Copy Encrypted JSON"}
                   </button>
@@ -450,12 +445,12 @@ function AccountContent() {
 
             {/* Decrypted verification view */}
             {decryptedResult && (
-              <div className="p-5 rounded-2xl bg-slate-950 border border-emerald-900/60 space-y-2 font-mono text-xs animate-in fade-in-50">
-                <div className="flex items-center gap-2 text-emerald-400 font-bold">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <div className="p-5 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-2 font-mono text-xs animate-in fade-in-50">
+                <div className="flex items-center gap-2 text-emerald-800 font-bold">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                   <span>Decryption Successful & Cryptographic Integrity Verified</span>
                 </div>
-                <div className="p-3 rounded-lg bg-slate-900 border border-slate-800 text-slate-200 whitespace-pre-wrap">
+                <div className="p-3 rounded-lg bg-white border border-emerald-200 text-slate-800 whitespace-pre-wrap">
                   {decryptedResult}
                 </div>
               </div>
@@ -464,17 +459,5 @@ function AccountContent() {
         </div>
       )}
     </div>
-  );
-}
-
-export default function AccountPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-[50vh] flex items-center justify-center text-cyan-400 font-mono text-xs">
-        Loading Account Operations Lab...
-      </div>
-    }>
-      <AccountContent />
-    </Suspense>
   );
 }

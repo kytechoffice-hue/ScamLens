@@ -10,25 +10,25 @@ interface RiskGaugeProps {
 export default function RiskGauge({ score, size = "md", showLabel = true }: RiskGaugeProps) {
   // Determine risk level and colors
   let level: "SAFE" | "SUSPICIOUS" | "DANGEROUS" = "SAFE";
-  let color = "text-emerald-400";
+  let color = "text-emerald-600";
   let strokeColor = "#10b981";
-  let bgColor = "bg-emerald-950/80";
-  let borderColor = "border-emerald-800/80";
+  let bgColor = "bg-emerald-50";
+  let borderColor = "border-emerald-200";
   let Icon = ShieldCheck;
 
   if (score > 65) {
     level = "DANGEROUS";
-    color = "text-rose-400";
-    strokeColor = "#ef4444";
-    bgColor = "bg-rose-950/80";
-    borderColor = "border-rose-800/80";
+    color = "text-rose-600";
+    strokeColor = "#e11d48";
+    bgColor = "bg-rose-50";
+    borderColor = "border-rose-200";
     Icon = ShieldAlert;
   } else if (score > 25) {
     level = "SUSPICIOUS";
-    color = "text-amber-400";
+    color = "text-amber-600";
     strokeColor = "#f59e0b";
-    bgColor = "bg-amber-950/80";
-    borderColor = "border-amber-800/80";
+    bgColor = "bg-amber-50";
+    borderColor = "border-amber-200";
     Icon = AlertTriangle;
   }
 
@@ -40,7 +40,7 @@ export default function RiskGauge({ score, size = "md", showLabel = true }: Risk
   const svgSize = (radius + strokeWidth) * 2;
 
   return (
-    <div className="flex flex-col items-center justify-center shrink-0">
+    <div className="flex flex-col items-center justify-center">
       <div className="relative flex items-center justify-center">
         <svg
           width={svgSize}
@@ -55,7 +55,7 @@ export default function RiskGauge({ score, size = "md", showLabel = true }: Risk
             stroke="currentColor"
             strokeWidth={strokeWidth}
             fill="transparent"
-            className="text-slate-850 text-slate-800"
+            className="text-slate-200"
           />
           {/* Active score ring */}
           <circle

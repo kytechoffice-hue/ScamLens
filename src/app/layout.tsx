@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import DashboardShell from "@/components/DashboardShell";
-import Footer from "@/components/Footer";
+import AppShell from "@/components/AppShell";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -47,22 +46,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}>
-      <body className="min-h-full flex flex-col bg-[#070a0f] text-slate-100 selection:bg-cyan-500 selection:text-black">
-        {/* Background Cyber Grid & Radar Glow */}
-        <div className="fixed inset-0 cyber-grid pointer-events-none opacity-40 z-0" />
-        <div className="fixed inset-0 radial-glow pointer-events-none z-0" />
-        <div className="fixed inset-0 radar-glow-rose pointer-events-none z-0" />
-
-        {/* Global Dashboard Shell (Header + Collapsible Sidebar + Main Content) */}
-        <div className="relative z-10 flex flex-col min-h-screen">
-          <DashboardShell>
-            <div className="flex-1 flex flex-col">
-              {children}
-            </div>
-            <Footer />
-          </DashboardShell>
-        </div>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+      <body className="min-h-full flex flex-col bg-slate-50 text-slate-900 selection:bg-amber-500 selection:text-white">
+        <AppShell>
+          {children}
+        </AppShell>
       </body>
     </html>
   );

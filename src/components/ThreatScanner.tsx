@@ -40,10 +40,10 @@ export default function ThreatScanner({ initialQuery = "", isCompact = false }: 
     setResult(null);
 
     const steps = [
-      "Connecting to India & Global Threat Intelligence Feeds...",
+      "Connecting to Global Threat Intelligence Feeds...",
       "Inspecting TLS/SSL & Domain Registration Records...",
-      "Analyzing Typosquatting & Netbanking Heuristics...",
-      "Cross-referencing 92 Global Anti-Phishing Blacklists & UPI Registry...",
+      "Analyzing Typosquatting & Visual Heuristics...",
+      "Cross-referencing 92 Global Anti-Phishing Blacklists...",
       "Compiling ScamLens Risk Assessment...",
     ];
 
@@ -66,19 +66,8 @@ export default function ThreatScanner({ initialQuery = "", isCompact = false }: 
           setResult(SAMPLE_CHECKS[normalized]);
         } else {
           // Dynamic simulated result for custom queries
-          const isSuspicious = 
-            target.includes("free") || 
-            target.includes("bonus") || 
-            target.includes("verify") || 
-            target.includes("login") || 
-            target.includes(".xyz") || 
-            target.includes(".top") || 
-            target.includes(".cc") ||
-            target.includes("kyc") ||
-            target.includes("yono") ||
-            target.includes("refund");
-
-          const score = isSuspicious ? 86 : 14;
+          const isSuspicious = target.includes("free") || target.includes("bonus") || target.includes("verify") || target.includes("login") || target.includes(".xyz") || target.includes(".top") || target.includes(".cc");
+          const score = isSuspicious ? 82 : 12;
           const level = isSuspicious ? "DANGEROUS" : "SAFE";
 
           setResult({
@@ -88,16 +77,16 @@ export default function ThreatScanner({ initialQuery = "", isCompact = false }: 
             riskLevel: level,
             verdict: isSuspicious ? "Suspicious Risk Patterns Identified" : "Clean Heuristic Profile Observed",
             summary: isSuspicious 
-              ? "This entity displays deceptive patterns matching recent phishing, fake KYC updates, or UPI fraud campaigns. Never input banking credentials or authorize collect requests." 
+              ? "This entity displays suspicious patterns matching recent phishing & social engineering campaigns. Avoid entering credentials or payments." 
               : "No malicious signatures or active blacklists recorded in verified threat intelligence feeds. Always exercise safe digital habits.",
             metrics: [
               { label: "SSL / Encryption", value: "Verified Standard", status: "good" },
-              { label: "Blacklist Status", value: isSuspicious ? "5 Engines Flagged" : "0 Clean", status: isSuspicious ? "warning" : "good" },
+              { label: "Blacklist Status", value: isSuspicious ? "4 Engines Flagged" : "0 Clean", status: isSuspicious ? "warning" : "good" },
               { label: "Community Rating", value: isSuspicious ? "High Suspicion" : "Trusted", status: isSuspicious ? "warning" : "good" },
-              { label: "Registration Age", value: isSuspicious ? "Recent (< 15d)" : "Established", status: isSuspicious ? "danger" : "good" },
+              { label: "Registration Age", value: isSuspicious ? "Recent (< 30d)" : "Established", status: isSuspicious ? "danger" : "good" },
             ],
             threatFactors: isSuspicious 
-              ? ["Keywords match high-volume phishing triggers", "Recently registered bulletproof top-level domain", "Anonymous WHOIS registrant"] 
+              ? ["Keywords match typical phishing triggers", "Recently registered top-level domain", "Anonymous WHOIS registrant"] 
               : [],
             safetyChecklist: [
               { check: "Valid Security Certificate", passed: true, detail: "Standard TLS encryption present." },
@@ -122,9 +111,9 @@ export default function ThreatScanner({ initialQuery = "", isCompact = false }: 
   return (
     <div className="w-full">
       {/* Scanner Card */}
-      <div className="bg-[#0c131f]/95 rounded-3xl p-5 sm:p-7 shadow-2xl border border-slate-800 relative overflow-hidden">
+      <div className="bg-white rounded-3xl p-5 sm:p-7 shadow-lg border border-slate-200/90 relative overflow-hidden">
         {/* Ambient subtle glow */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
 
         {/* Input Form */}
         <form
@@ -136,69 +125,69 @@ export default function ThreatScanner({ initialQuery = "", isCompact = false }: 
         >
           <div className="relative flex flex-col sm:flex-row items-stretch gap-2.5">
             <div className="relative flex-1">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500">
-                <Search className="w-5 h-5 text-cyan-400" />
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                <Search className="w-5 h-5 text-amber-500" />
               </div>
               <input
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Enter suspicious URL, domain, phone (+91), UPI ID, or crypto address..."
-                className="w-full pl-11 pr-4 py-3.5 sm:py-4 rounded-2xl bg-slate-950 border border-slate-800 text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/40 text-xs sm:text-sm font-mono transition-all"
+                placeholder="Enter suspicious URL, domain (e.g. chase-login-update.cc), phone, or crypto address..."
+                className="w-full pl-11 pr-4 py-4 rounded-2xl bg-slate-50 border border-slate-300 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-amber-500 focus:bg-white focus:ring-4 focus:ring-amber-500/10 text-sm sm:text-base font-mono transition-all"
               />
             </div>
 
             <button
               type="submit"
               disabled={isScanning || !query.trim()}
-              className="px-6 sm:px-7 py-3.5 sm:py-4 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold font-mono text-xs sm:text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-cyan-500/20 cursor-pointer shrink-0"
+              className="px-7 py-4 rounded-2xl bg-gradient-to-r from-[#0a2540] to-[#1e3a8a] hover:from-[#081f36] hover:to-[#172e6f] text-white font-bold text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-slate-900/10 cursor-pointer shrink-0"
             >
               {isScanning ? (
                 <>
-                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  <RefreshCw className="w-4 h-4 animate-spin text-amber-400" />
                   <span>Scanning...</span>
                 </>
               ) : (
                 <>
-                  <span>Audit Safety</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <span>Analyze Safety</span>
+                  <ArrowRight className="w-4 h-4 text-amber-400" />
                 </>
               )}
             </button>
           </div>
 
           {/* Quick Presets */}
-          <div className="flex flex-wrap items-center gap-2 pt-1 text-xs font-mono">
-            <span className="text-slate-400 font-semibold">Test Presets:</span>
-            <button
-              type="button"
-              onClick={() => {
-                setQuery("sbi-pan-kyc-verify-portal.top");
-                handleScan("sbi-pan-kyc-verify-portal.top");
-              }}
-              className="px-2.5 py-1 rounded-lg bg-rose-950/80 text-rose-300 border border-rose-800/80 hover:bg-rose-900 transition-colors"
-            >
-              SBI KYC Phishing (.top)
-            </button>
+          <div className="flex flex-wrap items-center gap-2 pt-1">
+            <span className="text-xs text-slate-500 font-medium">Try quick test presets:</span>
             <button
               type="button"
               onClick={() => {
                 setQuery("chase-auth-security-update9.cc");
                 handleScan("chase-auth-security-update9.cc");
               }}
-              className="px-2.5 py-1 rounded-lg bg-rose-950/80 text-rose-300 border border-rose-800/80 hover:bg-rose-900 transition-colors"
+              className="text-xs px-2.5 py-1 rounded-md bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-all font-mono font-medium cursor-pointer"
             >
-              Chase Phishing (.cc)
+              Fake Chase Phishing (.cc)
             </button>
             <button
               type="button"
               onClick={() => {
-                setQuery("paytm-refund-desk@ybl");
-                handleScan("paytm-refund-desk@ybl");
+                setQuery("apex-yield-ai-finance.top");
+                handleScan("apex-yield-ai-finance.top");
               }}
-              className="px-2.5 py-1 rounded-lg bg-amber-950/80 text-amber-300 border border-amber-800/80 hover:bg-amber-900 transition-colors"
+              className="text-xs px-2.5 py-1 rounded-md bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100 transition-all font-mono font-medium cursor-pointer"
             >
-              UPI Autopay Trap
+              ApexAI Crypto Ponzi
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setQuery("+1 (888) 492-3819");
+                handleScan("+1 (888) 492-3819");
+              }}
+              className="text-xs px-2.5 py-1 rounded-md bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 transition-all font-mono font-medium cursor-pointer"
+            >
+              +1 (888) Smishing Gateway
             </button>
             <button
               type="button"
@@ -206,130 +195,141 @@ export default function ThreatScanner({ initialQuery = "", isCompact = false }: 
                 setQuery("google.com");
                 handleScan("google.com");
               }}
-              className="px-2.5 py-1 rounded-lg bg-emerald-950/80 text-emerald-300 border border-emerald-800/80 hover:bg-emerald-900 transition-colors"
+              className="text-xs px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-all font-mono font-medium cursor-pointer"
             >
               google.com (Safe)
             </button>
           </div>
         </form>
 
-        {/* Live scanning progress bar */}
+        {/* Live scanning progress */}
         {isScanning && (
-          <div className="mt-6 p-4 rounded-2xl bg-slate-950 border border-slate-800 animate-in fade-in-50 duration-200">
-            <div className="flex items-center justify-between text-xs font-mono text-cyan-400 mb-2">
+          <div className="mt-6 pt-6 border-t border-slate-100 space-y-3">
+            <div className="flex items-center justify-between text-xs text-[#0a2540] font-mono font-medium">
               <span className="flex items-center gap-2">
-                <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                <RefreshCw className="w-3.5 h-3.5 animate-spin text-amber-500" />
                 {scanStep}
               </span>
-              <span className="text-slate-500 font-semibold">92 Threat Feeds Active</span>
+              <span className="text-slate-500">Heuristic Engine Active...</span>
             </div>
-            <div className="w-full h-1.5 rounded-full bg-slate-900 overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 animate-pulse rounded-full w-full" />
+            <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden relative">
+              <div className="h-full bg-gradient-to-r from-amber-500 via-blue-600 to-[#0a2540] animate-pulse w-4/5 rounded-full transition-all duration-300" />
             </div>
-          </div>
-        )}
-
-        {/* Result Container */}
-        {result && !isScanning && (
-          <div className="mt-6 border-t border-slate-800 pt-6 animate-in fade-in-50 duration-300 space-y-6">
-            {/* Top Verdict Row */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-2xl bg-slate-950/90 border border-slate-800">
-              <div className="flex items-center gap-4">
-                <RiskGauge score={result.riskScore} size="md" />
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span
-                      className={`text-xs font-mono font-black px-2 py-0.5 rounded border ${
-                        result.riskLevel === "DANGEROUS"
-                          ? "bg-rose-950 text-rose-300 border-rose-800/80"
-                          : result.riskLevel === "SUSPICIOUS"
-                          ? "bg-amber-950 text-amber-300 border-amber-800/80"
-                          : "bg-emerald-950 text-emerald-300 border-emerald-800/80"
-                      }`}
-                    >
-                      {result.riskLevel} VERDICT
-                    </span>
-                    <span className="text-xs font-mono text-slate-400">
-                      Score: {result.riskScore}/100
-                    </span>
-                  </div>
-                  <h3 className="text-base sm:text-lg font-bold text-white">
-                    {result.verdict}
-                  </h3>
-                  <p className="text-xs font-mono text-slate-400 break-all mt-0.5">
-                    Target: <span className="text-cyan-400">{result.query}</span>
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 self-start md:self-center">
-                <button
-                  type="button"
-                  onClick={copyResults}
-                  className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-850 text-slate-300 text-xs font-mono border border-slate-750 flex items-center gap-1.5 transition-colors"
-                >
-                  {copied ? (
-                    <>
-                      <Check className="w-3.5 h-3.5 text-emerald-400" />
-                      <span className="text-emerald-400">Copied</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-3.5 h-3.5" />
-                      <span>Copy Report</span>
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-
-            {/* Incident Summary */}
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-mono bg-slate-950/60 p-4 rounded-2xl border border-slate-800">
-              {result.summary}
-            </p>
-
-            {/* Metrics Breakdown Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {result.metrics.map((m) => (
-                <div key={m.label} className="p-3.5 rounded-xl bg-slate-950 border border-slate-800">
-                  <span className="text-[10px] font-mono text-slate-500 uppercase block mb-1">
-                    {m.label}
-                  </span>
-                  <span
-                    className={`text-xs font-mono font-bold block ${
-                      m.status === "good"
-                        ? "text-emerald-400"
-                        : m.status === "warning"
-                        ? "text-amber-400"
-                        : "text-rose-400"
-                    }`}
-                  >
-                    {m.value}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            {/* Threat Factors If Any */}
-            {result.threatFactors.length > 0 && (
-              <div className="p-4 rounded-2xl bg-rose-950/40 border border-rose-900/60 space-y-2">
-                <div className="flex items-center gap-2 text-rose-400 text-xs font-mono font-bold">
-                  <AlertTriangle className="w-4 h-4" />
-                  <span>IDENTIFIED FRAUD VECTORS</span>
-                </div>
-                <ul className="space-y-1 text-xs font-mono text-rose-200">
-                  {result.threatFactors.map((f, i) => (
-                    <li key={i} className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-                      <span>{f}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
           </div>
         )}
       </div>
+
+      {/* Result Card */}
+      {result && !isScanning && (
+        <div className="mt-6 bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-xl relative animate-in fade-in-50 duration-300">
+          {/* Header Verdict Section */}
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-6 border-b border-slate-100">
+            <div className="flex items-start sm:items-center gap-5">
+              <RiskGauge score={result.riskScore} size="lg" />
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-xs font-mono uppercase tracking-wider text-slate-500 font-semibold">
+                    Audit Target:
+                  </span>
+                  <span className="font-mono text-slate-900 text-sm sm:text-base font-bold bg-slate-100 px-2.5 py-0.5 rounded-md border border-slate-200">
+                    {result.query}
+                  </span>
+                </div>
+                <h3 className="text-lg sm:text-xl font-extrabold text-slate-900 mt-1.5 flex items-center gap-2">
+                  {result.verdict}
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-600 max-w-2xl mt-1 leading-relaxed">
+                  {result.summary}
+                </p>
+              </div>
+            </div>
+
+            {/* Share / Copy Result */}
+            <div className="shrink-0 flex sm:flex-col items-center gap-2 w-full sm:w-auto">
+              <button
+                onClick={copyResults}
+                className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs font-mono text-slate-700 font-semibold transition-all cursor-pointer"
+              >
+                {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5 text-slate-500" />}
+                <span>{copied ? "Report Copied" : "Share Verdict"}</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Heuristics & Metrics Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 py-6 border-b border-slate-100">
+            {result.metrics.map((metric, idx) => (
+              <div key={idx} className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+                <span className="text-[11px] text-slate-500 font-mono block mb-1">
+                  {metric.label}
+                </span>
+                <span className={`text-sm font-bold font-mono ${
+                  metric.status === "good" 
+                    ? "text-emerald-700" 
+                    : metric.status === "warning" 
+                    ? "text-amber-700" 
+                    : "text-rose-700"
+                }`}>
+                  {metric.value}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* Threat Factors & Heuristic Checklist */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
+            {/* Critical Red Flags */}
+            <div>
+              <h4 className="text-xs font-mono font-bold uppercase text-slate-700 mb-3 flex items-center gap-1.5">
+                <AlertTriangle className="w-4 h-4 text-amber-500" />
+                Detected Risk Signatures
+              </h4>
+              {result.threatFactors.length > 0 ? (
+                <ul className="space-y-2">
+                  {result.threatFactors.map((factor, i) => (
+                    <li key={i} className="flex items-start gap-2 text-xs text-rose-800 p-2.5 rounded-xl bg-rose-50 border border-rose-200 font-medium">
+                      <XCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                      <span>{factor}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="flex items-center gap-2 text-xs text-emerald-800 p-3 rounded-xl bg-emerald-50 border border-emerald-200 font-medium">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>No malicious signatures or credential interception scripts detected.</span>
+                </div>
+              )}
+            </div>
+
+            {/* Safety Verification Checklist */}
+            <div>
+              <h4 className="text-xs font-mono font-bold uppercase text-slate-700 mb-3 flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-blue-600" />
+                Security Verification Checklist
+              </h4>
+              <div className="space-y-2">
+                {result.safetyChecklist.map((item, i) => (
+                  <div key={i} className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-2.5">
+                    {item.passed ? (
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                    ) : (
+                      <XCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                    )}
+                    <div>
+                      <span className={`text-xs font-bold block ${item.passed ? "text-slate-800" : "text-rose-700"}`}>
+                        {item.check}
+                      </span>
+                      <span className="text-[11px] text-slate-500 leading-normal block">
+                        {item.detail}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
