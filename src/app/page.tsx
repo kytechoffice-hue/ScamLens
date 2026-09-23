@@ -16,7 +16,6 @@ import {
   Globe2,
   Database
 } from "lucide-react";
-import DashboardShell from "@/components/DashboardShell";
 import StatCard from "@/components/dashboard/StatCard";
 import IndiaThreatMap from "@/components/dashboard/IndiaThreatMap";
 import LiveThreatFeed from "@/components/dashboard/LiveThreatFeed";
@@ -27,8 +26,8 @@ import { DASHBOARD_KPIS } from "@/data/dashboardDemoData";
 
 export default function HomeDashboardPage() {
   return (
-    <DashboardShell>
-      <div className="flex-1 py-6 px-3 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8 w-full">
+    <div className="bg-[#070a0f] text-slate-100 min-h-screen py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 w-full">
         {/* Top Welcome & Sub-Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800/80">
           <div>
@@ -131,6 +130,6 @@ export default function HomeDashboardPage() {
           </div>
         </section>
       </div>
-    </DashboardShell>
+    </div>
   );
 }
