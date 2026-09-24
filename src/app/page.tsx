@@ -27,7 +27,7 @@ export default function HomeDashboardPage() {
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#0a2540] tracking-tight flex items-center gap-3">
-              <span>Our current registered India Cyber Threat Dashboard</span>
+              <span>Current registered Cyber Threats</span>
             </h1>
             <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-3xl leading-relaxed">
               Continuous surveillance of digital arrest extortion, UPI collect fraud, banking phishing portals, fake job tasks, and malicious infrastructure targeting Indian citizens.
