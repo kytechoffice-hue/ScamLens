@@ -10,7 +10,7 @@ import {
   Globe,
   PlusCircle, 
   BookOpen,
-  User,
+  LogIn,
   Menu, 
   X, 
   Radio,
@@ -129,17 +129,17 @@ export default function Navbar() {
               <span>Report a Scam</span>
             </Link>
 
-            {/* 👤 Account */}
+            {/* 🔑 Login */}
             <Link
-              href="/account"
+              href="/login"
               className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all ${
-                pathname === "/account"
+                pathname === "/login"
                   ? "bg-slate-900 text-white border-slate-900 shadow-sm"
                   : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50 hover:border-slate-300"
               }`}
             >
-              <User className="w-4 h-4 text-amber-500" />
-              <span>Account</span>
+              <LogIn className="w-4 h-4 text-amber-500" />
+              <span>Login</span>
             </Link>
           </div>
 
@@ -181,12 +181,12 @@ export default function Navbar() {
           })}
           
           <Link
-            href="/account"
+            href="/login"
             onClick={() => setMobileMenuOpen(false)}
             className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 border border-slate-200"
           >
-            <User className="w-4 h-4 text-amber-500" />
-            Account Dashboard
+            <LogIn className="w-4 h-4 text-amber-500" />
+            Sign In / Login
           </Link>
 
           <div className="pt-2">
