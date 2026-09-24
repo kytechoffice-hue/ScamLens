@@ -149,8 +149,15 @@ export default function Footer() {
           </div>
         </div>
 
+        {/* Disclaimer Notice */}
+        <div className="pt-6 mt-8 border-t border-slate-800 text-center sm:text-left">
+          <p className="text-xs text-slate-400 leading-relaxed font-mono">
+            <strong className="text-amber-400 font-semibold">Disclaimer:</strong> ScamLens is for information and awareness only. Results are indicative and do not guarantee the safety or legitimacy of any website, link, or online activity.
+          </p>
+        </div>
+
         {/* Bottom Bar */}
-        <div className="pt-8 mt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+        <div className="pt-6 mt-6 border-t border-slate-800/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <p>© {new Date().getFullYear()} ScamLens. See it. Report it. Stop it. All rights reserved.</p>
           <div className="flex items-center gap-6">
             <Link href="/learn" className="text-slate-400 hover:text-white">Safety Guides</Link>
