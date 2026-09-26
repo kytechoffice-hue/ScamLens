@@ -27,9 +27,13 @@ export interface AppConfig {
   };
   database: {
     provider: "MySQL on Hostinger (Prisma)";
-    readinessStatus: "Pending DB Credentials";
+    readinessStatus: "Encrypted Config Active (AES-256-GCM)";
+    configSource: string;
   };
 }
+
+export { getDatabaseConfig, getDatabaseUrl, isDatabaseConfigured } from "./dbConfig";
+export type { DatabaseConfig } from "./dbConfig";
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -57,6 +61,7 @@ export const APP_CONFIG: AppConfig = {
   },
   database: {
     provider: "MySQL on Hostinger (Prisma)",
-    readinessStatus: "Pending DB Credentials",
+    readinessStatus: "Encrypted Config Active (AES-256-GCM)",
+    configSource: "src/config/dbConfig.encrypted.json",
   },
 };

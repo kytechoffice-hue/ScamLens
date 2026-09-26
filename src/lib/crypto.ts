@@ -44,7 +44,9 @@ async function deriveKey(passphrase: string): Promise<CryptoKey> {
   );
 }
 
-const DEFAULT_SECRET = "ScamLens_Global_Secure_Key_2026_ProdDev";
+export const DEFAULT_SECRET =
+  (typeof process !== "undefined" && process.env?.SCAMLENS_ENCRYPTION_SECRET) ||
+  "ScamLens_Global_Secure_Key_2026_ProdDev";
 
 /**
  * Encrypt any plaintext string or JSON payload using AES-256-GCM
