@@ -40,3 +40,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local dev/test scripts (may contain hardcoded credentials)
+scripts/test-*.mjs

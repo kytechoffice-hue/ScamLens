@@ -1,30 +1,115 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { 
-  User, 
-  Lock, 
-  Eye, 
-  EyeOff, 
-  CheckCircle2, 
-  AlertCircle, 
+import {
+  User,
+  Lock,
+  Eye,
+  EyeOff,
+  CheckCircle2,
+  AlertCircle,
   ArrowLeft,
   Mail,
   KeyRound,
-  X
+  X,
+  ShieldAlert,
 } from "lucide-react";
 
+// ─── Error Popup Modal ────────────────────────────────────────────────────────
+interface ErrorPopupProps {
+  message: string;
+  onClose: () => void;
+}
+
+function ErrorPopup({ message, onClose }: ErrorPopupProps) {
+  // Auto-dismiss after 5 seconds
+  useEffect(() => {
+    const timer = setTimeout(onClose, 5000);
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
+  return (
+    <div
+      className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm"
+      role="alertdialog"
+      aria-modal="true"
+      aria-labelledby="error-popup-title"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div className="bg-white rounded-3xl border border-red-200 shadow-2xl max-w-sm w-full p-7 relative overflow-hidden animate-in zoom-in-95 fade-in duration-200">
+        {/* Red top accent */}
+        <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-red-500 via-rose-400 to-red-700 rounded-t-3xl" />
+
+        {/* Close Button */}
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute top-4 right-4 p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-colors cursor-pointer"
+          aria-label="Close error popup"
+        >
+          <X className="w-4 h-4" />
+        </button>
+
+        {/* Icon + Title */}
+        <div className="flex flex-col items-center text-center gap-3 mb-4">
+          <div className="w-14 h-14 rounded-2xl bg-red-50 border border-red-200 flex items-center justify-center text-red-500 shadow-sm">
+            <ShieldAlert className="w-7 h-7" />
+          </div>
+          <h2 id="error-popup-title" className="text-lg font-black text-[#0a2540] tracking-tight">
+            Login Failed
+          </h2>
+        </div>
+
+        {/* Message */}
+        <p className="text-sm text-slate-600 text-center leading-relaxed mb-6">
+          {message}
+        </p>
+
+        {/* Dismiss Button */}
+        <button
+          type="button"
+          onClick={onClose}
+          className="w-full py-2.5 px-5 rounded-xl bg-red-600 hover:bg-red-700 active:scale-[0.99] text-white text-sm font-bold transition-all cursor-pointer shadow-md shadow-red-500/20"
+        >
+          Try Again
+        </button>
+
+        {/* Auto-dismiss progress bar */}
+        <div className="mt-4 h-1 w-full bg-slate-100 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-red-400 rounded-full"
+            style={{ animation: "shrink 5s linear forwards" }}
+          />
+        </div>
+
+        <style>{`
+          @keyframes shrink {
+            from { width: 100%; }
+            to   { width: 0%; }
+          }
+        `}</style>
+      </div>
+    </div>
+  );
+}
+
+// ─── Login Page ───────────────────────────────────────────────────────────────
 export default function LoginPage() {
   const router = useRouter();
   const [usernameOrEmail, setUsernameOrEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+
+  // Error popup state
+  const [popupError, setPopupError] = useState("");
+  const [showErrorPopup, setShowErrorPopup] = useState(false);
 
   // Forgot Password Modal State
   const [isForgotModalOpen, setIsForgotModalOpen] = useState(false);
@@ -33,37 +118,61 @@ export default function LoginPage() {
   const [forgotError, setForgotError] = useState("");
   const [forgotSuccess, setForgotSuccess] = useState("");
 
+  const openErrorPopup = useCallback((msg: string) => {
+    setPopupError(msg);
+    setShowErrorPopup(true);
+  }, []);
+
+  const closeErrorPopup = useCallback(() => {
+    setShowErrorPopup(false);
+    setPopupError("");
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMessage("");
     setSuccessMessage("");
+    closeErrorPopup();
 
-    if (!usernameOrEmail.trim()) {
-      setErrorMessage("Please enter your Username or Email.");
-      return;
-    }
-
-    if (!password) {
-      setErrorMessage("Please enter your Password.");
-      return;
+    // Client-side validation — show inline (not popup) for empty fields
+    if (!usernameOrEmail.trim() || !password) {
+      return; // HTML `required` attributes already handle this
     }
 
     setIsLoading(true);
 
-    // Simulate login authentication
-    setTimeout(() => {
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ usernameOrEmail: usernameOrEmail.trim(), password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        // Show error in popup modal
+        openErrorPopup(data.message ?? "An unexpected error occurred. Please try again.");
+        return;
+      }
+
+      // ── Success ──────────────────────────────────────────────────────────
+      setSuccessMessage(
+        `Welcome back${data.user?.fullName ? `, ${data.user.fullName}` : ""}! Redirecting to your dashboard…`
+      );
+      setTimeout(() => router.push("/account"), 1200);
+    } catch {
+      openErrorPopup(
+        "Unable to reach the server. Please check your internet connection and try again."
+      );
+    } finally {
       setIsLoading(false);
-      setSuccessMessage("Login successful! Redirecting to your account dashboard...");
-      setTimeout(() => {
-        router.push("/account");
-      }, 1200);
-    }, 800);
+    }
   };
 
   const handleCancel = () => {
     setUsernameOrEmail("");
     setPassword("");
-    setErrorMessage("");
+    closeErrorPopup();
     setSuccessMessage("");
     router.push("/");
   };
@@ -143,14 +252,7 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {/* Alert Messages */}
-          {errorMessage && (
-            <div className="mb-6 p-3.5 rounded-xl bg-red-50 border border-red-200 flex items-start gap-2.5 text-xs text-red-700 animate-in fade-in duration-200">
-              <AlertCircle className="w-4 h-4 shrink-0 text-red-600 mt-0.5" />
-              <span>{errorMessage}</span>
-            </div>
-          )}
-
+          {/* Success Banner */}
           {successMessage && (
             <div className="mb-6 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-start gap-2.5 text-xs text-emerald-800 animate-in fade-in duration-200">
               <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600 mt-0.5" />
@@ -160,7 +262,7 @@ export default function LoginPage() {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* 1. Username / Email Textbox */}
+            {/* 1. Username / Email */}
             <div>
               <label
                 htmlFor="usernameOrEmail"
@@ -186,7 +288,7 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* 2. Password Textbox */}
+            {/* 2. Password */}
             <div>
               <div className="flex items-center justify-between mb-2">
                 <label
@@ -282,10 +384,15 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Forgot Password Popup Modal */}
+      {/* ── Error Popup Modal ─────────────────────────────────────────────── */}
+      {showErrorPopup && (
+        <ErrorPopup message={popupError} onClose={closeErrorPopup} />
+      )}
+
+      {/* ── Forgot Password Popup Modal ───────────────────────────────────── */}
       {isForgotModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
-          <div 
+          <div
             className="bg-white rounded-3xl border border-slate-200/90 shadow-2xl max-w-md w-full p-6 sm:p-8 relative overflow-hidden animate-in zoom-in-95 duration-200"
             role="dialog"
             aria-modal="true"
@@ -309,11 +416,15 @@ export default function LoginPage() {
               <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200/80 flex items-center justify-center text-amber-600 mx-auto mb-3.5 shadow-xs">
                 <KeyRound className="w-6 h-6" />
               </div>
-              <h2 id="forgot-password-title" className="text-xl sm:text-2xl font-black text-[#0a2540] tracking-tight">
+              <h2
+                id="forgot-password-title"
+                className="text-xl sm:text-2xl font-black text-[#0a2540] tracking-tight"
+              >
                 Reset Password
               </h2>
               <p className="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">
-                Enter your registered Email ID below and we will send you instructions to reset your password.
+                Enter your registered Email ID below and we will send you instructions to reset
+                your password.
               </p>
             </div>
 
