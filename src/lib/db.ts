@@ -9,16 +9,44 @@ import mysql from 'mysql2/promise';
 // ---------------------------------------------------------------------------
 // Parse DATABASE_URL into individual parts (used as fallback in production)
 // Format: mysql://user:password@host:port/database
+//
+// Uses regex instead of new URL() because passwords often contain special
+// characters (+ ; . @ etc.) that break the standard URL parser.
 // ---------------------------------------------------------------------------
 function parseDatabaseUrl(url: string) {
   try {
-    const parsed = new URL(url);
+    // Strip scheme — supports mysql://, mysql2://, postgresql://, postgres://
+    const withoutScheme = url.replace(/^[a-z0-9+\-.]+:\/\//i, '');
+
+    // Split credentials from host portion at the LAST @ sign
+    // (passwords may contain @ themselves)
+    const atIndex = withoutScheme.lastIndexOf('@');
+    if (atIndex === -1) return null;
+
+    const credentials = withoutScheme.slice(0, atIndex);       // user:password
+    const hostPart    = withoutScheme.slice(atIndex + 1);      // host:port/database
+
+    // Split user:password — only split on the FIRST colon
+    const colonIdx = credentials.indexOf(':');
+    const user     = colonIdx !== -1 ? credentials.slice(0, colonIdx) : credentials;
+    const password = colonIdx !== -1 ? credentials.slice(colonIdx + 1) : '';
+
+    // Split host:port/database
+    const slashIdx = hostPart.indexOf('/');
+    const hostPort = slashIdx !== -1 ? hostPart.slice(0, slashIdx) : hostPart;
+    const database = slashIdx !== -1 ? hostPart.slice(slashIdx + 1).split('?')[0] : '';
+
+    const lastColon = hostPort.lastIndexOf(':');
+    const host = lastColon !== -1 ? hostPort.slice(0, lastColon) : hostPort;
+    const port = lastColon !== -1 ? Number(hostPort.slice(lastColon + 1)) : 3306;
+
     return {
-      host: parsed.hostname,
-      port: parsed.port ? Number(parsed.port) : 3306,
-      database: parsed.pathname.replace(/^\//, ''),
-      user: decodeURIComponent(parsed.username),
-      password: decodeURIComponent(parsed.password),
+      host: decodeURIComponent(host),
+      port: isNaN(port) ? 3306 : port,
+      database: decodeURIComponent(database),
+      user: decodeURIComponent(user),
+      // Try decoding; if it fails (not percent-encoded), use raw value
+      password: (() => { try { return decodeURIComponent(password); } catch { return password; } })(),
     };
   } catch {
     return null;
