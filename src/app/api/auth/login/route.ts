@@ -122,12 +122,22 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (err) {
-    console.error('[/api/auth/login] Error:', err);
+    const message = err instanceof Error ? err.message : String(err);
+    console.error('[/api/auth/login] Error:', message);
+
+    // In non-production, expose the real error to aid debugging
+    if (process.env.NODE_ENV !== 'production') {
+      return Response.json(
+        { success: false, message, debug: true },
+        { status: 500 }
+      );
+    }
+
     return Response.json(
       {
         success: false,
-        message:
-          'A server error occurred while processing your login. Please try again later.',
+        message: 'A server error occurred while processing your login. Please try again later.',
+        errorHint: message.slice(0, 120), // safe truncated hint visible in prod response
       },
       { status: 500 }
     );
