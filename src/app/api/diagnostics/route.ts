@@ -37,11 +37,11 @@ export async function GET() {
     const start = Date.now();
     const pool = getPool();
     const conn = await pool.getConnection();
-    const [rows] = await conn.execute<{ now: string }[]>("SELECT NOW() AS now");
+    const [rows] = await conn.execute<({ now: string } & import('mysql2').RowDataPacket)[]>("SELECT NOW() AS now");
     conn.release();
     dbStatus = "connected";
     dbLatencyMs = Date.now() - start;
-    dbServerTime = (rows as { now: string }[])[0]?.now ?? null;
+    dbServerTime = rows[0]?.now ?? null;
   } catch (err: unknown) {
     dbError = err instanceof Error ? err.message : String(err);
   }
