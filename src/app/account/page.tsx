@@ -30,9 +30,8 @@ export default function AccountPage() {
   const [activeTab, setActiveTab] = useState<"profile" | "settings" | "crypto">("profile");
 
   // Auth simulation state
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
-  const [userEmail, setUserEmail] = useState("analyst.citizen@scamlens.com");
-  const [userRole, setUserRole] = useState<"Community Sentinel" | "Security Analyst">("Security Analyst");
+  const [userEmail] = useState("analyst.citizen@scamlens.com");
+  const [userRole] = useState<"Community Sentinel" | "Security Analyst">("Security Analyst");
 
   // Global Environment State simulation (Dev vs Prod)
   const [currentEnv, setCurrentEnv] = useState<"development" | "production">("development");
@@ -173,20 +172,12 @@ export default function AccountPage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <Link
-                href="/report"
-                className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-red-500 to-rose-600 text-white text-xs font-bold shadow-xs hover:opacity-90 transition-all"
-              >
-                + New Incident Report
-              </Link>
-              <button
-                onClick={() => setIsLoggedIn(!isLoggedIn)}
-                className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-xs font-semibold transition-all cursor-pointer"
-              >
-                {isLoggedIn ? "Simulate Logout" : "Log In"}
-              </button>
-            </div>
+            <Link
+              href="/report"
+              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-red-500 to-rose-600 text-white text-xs font-bold shadow-xs hover:opacity-90 transition-all shrink-0"
+            >
+              + New Incident Report
+            </Link>
           </div>
 
           {/* User Submitted Incidents */}

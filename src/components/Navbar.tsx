@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { 
   Home,
   Search, 
@@ -11,18 +11,39 @@ import {
   PlusCircle, 
   BookOpen,
   LogIn,
+  LogOut,
   Menu, 
   X, 
   Radio,
-  ShieldAlert,
-  Database
 } from "lucide-react";
 import { MOCK_RECENT_TICKER } from "@/data/mockData";
 
+interface StoredUser {
+  id: number;
+  username: string | null;
+  email: string;
+  fullName: string | null;
+  role: string;
+}
+
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [tickerIndex, setTickerIndex] = useState(0);
+  const [user, setUser] = useState<StoredUser | null>(null);
+
+  // Read auth state from localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem("scamlens_user");
+    if (stored) {
+      try {
+        setUser(JSON.parse(stored));
+      } catch {
+        localStorage.removeItem("scamlens_user");
+      }
+    }
+  }, [pathname]); // re-check on route change (e.g. after login redirect)
 
   // Cycle threat ticker
   useEffect(() => {
@@ -31,6 +52,13 @@ export default function Navbar() {
     }, 4500);
     return () => clearInterval(timer);
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("scamlens_user");
+    setUser(null);
+    setMobileMenuOpen(false);
+    router.push("/login");
+  };
 
   const navLinks = [
     { name: "Home", href: "/", icon: Home },
@@ -120,27 +148,37 @@ export default function Navbar() {
 
           {/* Right Action CTAs */}
           <div className="hidden sm:flex items-center gap-3">
-            {/* 🚨 Report a Scam CTA */}
+            {/* 🚨 New Incident Report CTA */}
             <Link
               href="/report"
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-red-500 via-rose-600 to-amber-600 text-white font-semibold text-xs shadow-md shadow-red-500/15 hover:opacity-95 transition-all"
             >
               <PlusCircle className="w-4 h-4" />
-              <span>Report a Scam</span>
+              <span>New Incident Report</span>
             </Link>
 
-            {/* 🔑 Login */}
-            <Link
-              href="/login"
-              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all ${
-                pathname === "/login"
-                  ? "bg-slate-900 text-white border-slate-900 shadow-sm"
-                  : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50 hover:border-slate-300"
-              }`}
-            >
-              <LogIn className="w-4 h-4 text-amber-500" />
-              <span>Login</span>
-            </Link>
+            {/* 🔑 Login / Logout */}
+            {user ? (
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all bg-white text-slate-700 border-slate-200 hover:bg-red-50 hover:border-red-300 hover:text-red-700 cursor-pointer"
+              >
+                <LogOut className="w-4 h-4 text-red-500" />
+                <span>Logout</span>
+              </button>
+            ) : (
+              <Link
+                href="/login"
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all ${
+                  pathname === "/login"
+                    ? "bg-slate-900 text-white border-slate-900 shadow-sm"
+                    : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50 hover:border-slate-300"
+                }`}
+              >
+                <LogIn className="w-4 h-4 text-amber-500" />
+                <span>Login</span>
+              </Link>
+            )}
           </div>
 
           {/* Mobile menu toggle */}
@@ -179,15 +217,26 @@ export default function Navbar() {
               </Link>
             );
           })}
-          
-          <Link
-            href="/login"
-            onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 border border-slate-200"
-          >
-            <LogIn className="w-4 h-4 text-amber-500" />
-            Sign In / Login
-          </Link>
+
+          {/* Login / Logout */}
+          {user ? (
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-3 w-full px-4 py-2.5 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 border border-red-200 cursor-pointer"
+            >
+              <LogOut className="w-4 h-4 text-red-500" />
+              Logout
+            </button>
+          ) : (
+            <Link
+              href="/login"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 border border-slate-200"
+            >
+              <LogIn className="w-4 h-4 text-amber-500" />
+              Sign In / Login
+            </Link>
+          )}
 
           <div className="pt-2">
             <Link
@@ -196,7 +245,7 @@ export default function Navbar() {
               className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl bg-gradient-to-r from-red-500 to-rose-600 text-white text-sm font-semibold shadow-md shadow-red-500/20"
             >
               <PlusCircle className="w-4 h-4" />
-              Report a Scam
+              New Incident Report
             </Link>
           </div>
         </div>

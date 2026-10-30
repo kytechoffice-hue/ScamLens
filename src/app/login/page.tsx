@@ -156,6 +156,10 @@ export default function LoginPage() {
       }
 
       // ── Success ──────────────────────────────────────────────────────────
+      // Persist user in localStorage so Navbar can detect logged-in state
+      if (data.user) {
+        localStorage.setItem("scamlens_user", JSON.stringify(data.user));
+      }
       setSuccessMessage(
         `Welcome back${data.user?.fullName ? `, ${data.user.fullName}` : ""}! Redirecting to your dashboard…`
       );
