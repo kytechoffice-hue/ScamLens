@@ -18,7 +18,7 @@ export default function RegisterPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage("");
     setSuccessMessage("");
@@ -45,14 +45,28 @@ export default function RegisterPage() {
 
     setIsLoading(true);
 
-    // Simulate account registration
-    setTimeout(() => {
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fullName: fullName.trim(), email: email.trim(), password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        setErrorMessage(data.message ?? "An unexpected error occurred. Please try again.");
+        return;
+      }
+
+      setSuccessMessage("Account created successfully! Redirecting to login...");
+      setTimeout(() => router.push("/login"), 1200);
+    } catch {
+      setErrorMessage("Unable to reach the server. Please check your internet connection and try again.");
+    } finally {
       setIsLoading(false);
-      setSuccessMessage("Account registered successfully! Redirecting to login...");
-      setTimeout(() => {
-        router.push("/login");
-      }, 1200);
-    }, 900);
+    }
+
   };
 
   const handleCancel = () => {
