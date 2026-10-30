@@ -150,7 +150,7 @@ export default function Navbar() {
           <div className="hidden sm:flex items-center gap-3">
             {/* 🚨 New Incident Report CTA */}
             <Link
-              href="/report"
+              href={user ? "/report" : "/login"}
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-red-500 via-rose-600 to-amber-600 text-white font-semibold text-xs shadow-md shadow-red-500/15 hover:opacity-95 transition-all"
             >
               <PlusCircle className="w-4 h-4" />
@@ -240,7 +240,7 @@ export default function Navbar() {
 
           <div className="pt-2">
             <Link
-              href="/report"
+              href={user ? "/report" : "/login"}
               onClick={() => setMobileMenuOpen(false)}
               className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl bg-gradient-to-r from-red-500 to-rose-600 text-white text-sm font-semibold shadow-md shadow-red-500/20"
             >
