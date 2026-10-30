@@ -57,7 +57,7 @@ export default function Navbar() {
     localStorage.removeItem("scamlens_user");
     setUser(null);
     setMobileMenuOpen(false);
-    router.push("/login");
+    router.push("/");
   };
 
   const navLinks = [
