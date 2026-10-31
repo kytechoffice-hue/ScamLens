@@ -6,7 +6,7 @@
 
 import { NextRequest } from 'next/server';
 import { getPool } from '@/lib/db';
-import { RowDataPacket, ResultSetHeader } from 'mysql2';
+import { RowDataPacket, ResultSetHeader, ExecuteValues } from 'mysql2';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -262,7 +262,7 @@ export async function GET(request: NextRequest) {
     const offset   = (page - 1) * limit;
 
     const conditions: string[] = ['r.consent_agreed = 1'];
-    const values: mysql.ExecuteValues = [];
+    const values: ExecuteValues = [];
 
     if (email)    { conditions.push('r.reporter_email = ?');    values.push(email); }
     if (status)   { conditions.push('r.status = ?');            values.push(status); }
