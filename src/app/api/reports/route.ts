@@ -262,7 +262,7 @@ export async function GET(request: NextRequest) {
     const offset   = (page - 1) * limit;
 
     const conditions: string[] = ['r.consent_agreed = 1'];
-    const values: unknown[]    = [];
+    const values: mysql.ExecuteValues = [];
 
     if (email)    { conditions.push('r.reporter_email = ?');    values.push(email); }
     if (status)   { conditions.push('r.status = ?');            values.push(status); }
