@@ -88,7 +88,14 @@ function SelectWrapper({ children }: { children: React.ReactNode }) {
 
 // ─── File Upload ──────────────────────────────────────────────────────────────
 
-type FileEntry = { name: string; size: string };
+type FileEntry = {
+  name: string;
+  size: string;
+  url?: string;
+  storedName?: string;
+  mimeType?: string;
+  fileSizeKb?: number;
+};
 
 function FileUploadZone({
   label,
@@ -106,13 +113,39 @@ function FileUploadZone({
   accept?: string;
 }) {
   const ref = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    Array.from(e.target.files ?? []).forEach((file) => {
+  const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = Array.from(e.target.files ?? []);
+    if (selectedFiles.length === 0) return;
+
+    setUploading(true);
+    for (const file of selectedFiles) {
       const kb = (file.size / 1024).toFixed(0);
-      const size = file.size > 1024 * 1024 ? `${(file.size / (1024 * 1024)).toFixed(1)} MB` : `${kb} KB`;
-      onAdd({ name: file.name, size });
-    });
+      const sizeStr = file.size > 1024 * 1024 ? `${(file.size / (1024 * 1024)).toFixed(1)} MB` : `${kb} KB`;
+
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        const res = await fetch("/api/upload", { method: "POST", body: formData });
+        const data = await res.json();
+        if (data.success) {
+          onAdd({
+            name: file.name,
+            size: sizeStr,
+            url: data.url,
+            storedName: data.storedName,
+            mimeType: data.mimeType,
+            fileSizeKb: data.fileSizeKb,
+          });
+        } else {
+          onAdd({ name: file.name, size: sizeStr, url: `uploads/${file.name}` });
+        }
+      } catch {
+        onAdd({ name: file.name, size: sizeStr, url: `uploads/${file.name}` });
+      }
+    }
+    setUploading(false);
     e.target.value = "";
   };
 
@@ -121,11 +154,13 @@ function FileUploadZone({
       <Label>{label}</Label>
       {hint && <Hint>{hint}</Hint>}
       <div
-        onClick={() => ref.current?.click()}
-        className="mt-2 border-2 border-dashed border-slate-200 hover:border-amber-400 rounded-xl p-5 text-center cursor-pointer transition-all bg-slate-50 hover:bg-amber-50/30 group"
+        onClick={() => !uploading && ref.current?.click()}
+        className="mt-2 border-2 border-dashed border-slate-200 hover:border-amber-400 rounded-xl p-5 text-center cursor-pointer transition-all bg-slate-50 hover:bg-amber-50/30 group relative"
       >
-        <UploadCloud className="w-6 h-6 text-amber-500 mx-auto mb-1.5 group-hover:scale-110 transition-transform" />
-        <p className="text-xs font-semibold text-slate-600">Click to browse or drag & drop</p>
+        <UploadCloud className={`w-6 h-6 text-amber-500 mx-auto mb-1.5 transition-transform ${uploading ? "animate-bounce" : "group-hover:scale-110"}`} />
+        <p className="text-xs font-semibold text-slate-600">
+          {uploading ? "Uploading files..." : "Click to browse or drag & drop"}
+        </p>
         <span className="text-[10px] text-slate-400">PNG, JPG, PDF up to 10 MB</span>
         <input ref={ref} type="file" multiple accept={accept} className="hidden" onChange={handleChange} />
       </div>
@@ -205,6 +240,18 @@ export default function ReportPage() {
   const [repDistrict, setRepDistrict] = useState("");
   const [repCity, setRepCity]       = useState("");
 
+  // Auto-fill logged-in user credentials if present
+  React.useEffect(() => {
+    try {
+      const stored = localStorage.getItem("scamlens_user");
+      if (stored) {
+        const u = JSON.parse(stored);
+        if (u.fullName) setRepName(u.fullName);
+        if (u.email) setRepEmail(u.email);
+      }
+    } catch { /* ignore */ }
+  }, []);
+
   // ── Step 6: Confirmation
   const [reportedPolice, setReportedPolice] = useState<"yes" | "no" | "">("");
   const [policeNumber, setPoliceNumber]     = useState("");
@@ -249,12 +296,40 @@ export default function ReportPage() {
         transactionId:   lostMoney === "yes" ? transactionId || undefined : undefined,
         transactionDate: lostMoney === "yes" ? transactionDate || undefined : undefined,
 
-        // Step 4 – file metadata (real upload handled separately)
+        // Step 4 – file metadata with uploaded URLs
         evidenceFiles: [
-          ...screenshots.map((f) => ({ fileType: "screenshot"       as const, originalName: f.name, storedName: f.name, mimeType: "image/*", fileSizeKb: 0, storagePath: `uploads/${f.name}` })),
-          ...receipts.map((f)    => ({ fileType: "payment_receipt"   as const, originalName: f.name, storedName: f.name, mimeType: "image/*", fileSizeKb: 0, storagePath: `uploads/${f.name}` })),
-          ...chatRecords.map((f) => ({ fileType: "chat_email_record" as const, originalName: f.name, storedName: f.name, mimeType: "image/*", fileSizeKb: 0, storagePath: `uploads/${f.name}` })),
-          ...otherDocs.map((f)   => ({ fileType: "other"             as const, originalName: f.name, storedName: f.name, mimeType: "application/octet-stream", fileSizeKb: 0, storagePath: `uploads/${f.name}` })),
+          ...screenshots.map((f) => ({
+            fileType: "screenshot" as const,
+            originalName: f.name,
+            storedName: f.storedName || f.name,
+            mimeType: f.mimeType || "image/*",
+            fileSizeKb: f.fileSizeKb || 0,
+            storagePath: f.url || `uploads/${f.name}`,
+          })),
+          ...receipts.map((f) => ({
+            fileType: "payment_receipt" as const,
+            originalName: f.name,
+            storedName: f.storedName || f.name,
+            mimeType: f.mimeType || "image/*",
+            fileSizeKb: f.fileSizeKb || 0,
+            storagePath: f.url || `uploads/${f.name}`,
+          })),
+          ...chatRecords.map((f) => ({
+            fileType: "chat_email_record" as const,
+            originalName: f.name,
+            storedName: f.storedName || f.name,
+            mimeType: f.mimeType || "image/*",
+            fileSizeKb: f.fileSizeKb || 0,
+            storagePath: f.url || `uploads/${f.name}`,
+          })),
+          ...otherDocs.map((f) => ({
+            fileType: "other" as const,
+            originalName: f.name,
+            storedName: f.storedName || f.name,
+            mimeType: f.mimeType || "application/octet-stream",
+            fileSizeKb: f.fileSizeKb || 0,
+            storagePath: f.url || `uploads/${f.name}`,
+          })),
         ],
 
         // Step 5

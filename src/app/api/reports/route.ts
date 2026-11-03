@@ -252,7 +252,11 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const email    = searchParams.get('email');
+    const roleHeader = request.headers.get('X-User-Role') || '';
+    const emailHeader = request.headers.get('X-User-Email') || '';
+
+    const isAdmin = roleHeader.toLowerCase() === 'admin';
+    const queryEmail = searchParams.get('email');
     const status   = searchParams.get('status');
     const category = searchParams.get('category');
     const from     = searchParams.get('from');
@@ -264,7 +268,29 @@ export async function GET(request: NextRequest) {
     const conditions: string[] = ['r.consent_agreed = 1'];
     const values: ExecuteValues = [];
 
-    if (email)    { conditions.push('r.reporter_email = ?');    values.push(email); }
+    // Role-based visibility:
+    // Non-admin can only see reports created by their own email
+    if (!isAdmin) {
+      const userEmail = emailHeader || queryEmail;
+      if (!userEmail) {
+        return Response.json({
+          success: true,
+          data: [],
+          pagination: {
+            page,
+            limit,
+            total: 0,
+            totalPages: 1,
+          },
+        });
+      }
+      conditions.push('r.reporter_email = ?');
+      values.push(userEmail);
+    } else if (queryEmail) {
+      conditions.push('r.reporter_email = ?');
+      values.push(queryEmail);
+    }
+
     if (status)   { conditions.push('r.status = ?');            values.push(status); }
     if (category) { conditions.push('c.slug = ?');              values.push(category); }
     if (from)     { conditions.push('r.incident_date >= ?');    values.push(from); }
@@ -281,7 +307,9 @@ export async function GET(request: NextRequest) {
          r.platform, r.incident_date,
          r.lost_money, r.amount_lost_inr,
          r.scammer_url, r.scammer_phone,
-         r.created_at
+         r.reporter_name, r.reporter_email,
+         r.created_at,
+         (SELECT COUNT(*) FROM scam_report_evidence e WHERE e.report_id = r.id) AS evidence_count
        FROM scam_reports r
        JOIN scam_categories c ON c.id = r.category_id
        ${where}

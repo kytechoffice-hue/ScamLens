@@ -20,6 +20,52 @@ function isAdmin(request: NextRequest): boolean {
   return role === 'admin';
 }
 
+// ── GET: fetch single report details + evidence (admin only) ───────────────────
+export async function GET(request: NextRequest, { params }: Params) {
+  if (!isAdmin(request)) {
+    return Response.json({ success: false, message: 'Admin access required.' }, { status: 403 });
+  }
+
+  const { id } = await params;
+  const reportId = Number(id);
+  if (!reportId || isNaN(reportId)) {
+    return Response.json({ success: false, message: 'Invalid report ID.' }, { status: 400 });
+  }
+
+  const pool = getPool();
+  try {
+    const [reportRows] = await pool.execute<import('mysql2').RowDataPacket[]>(
+      `SELECT r.*, c.label AS category, c.sub_label AS category_tag
+       FROM scam_reports r
+       JOIN scam_categories c ON c.id = r.category_id
+       WHERE r.id = ? LIMIT 1`,
+      [reportId]
+    );
+
+    if (reportRows.length === 0) {
+      return Response.json({ success: false, message: 'Report not found.' }, { status: 404 });
+    }
+
+    const [evidenceRows] = await pool.execute<import('mysql2').RowDataPacket[]>(
+      `SELECT id, file_type, original_name, stored_name, mime_type, file_size_kb, storage_path, uploaded_at
+       FROM scam_report_evidence
+       WHERE report_id = ?
+       ORDER BY uploaded_at ASC`,
+      [reportId]
+    );
+
+    return Response.json({
+      success: true,
+      report: reportRows[0],
+      evidence: evidenceRows,
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`[GET /api/reports/${id}] Error:`, message);
+    return Response.json({ success: false, message }, { status: 500 });
+  }
+}
+
 // ── PATCH: change status ──────────────────────────────────────────────────────
 export async function PATCH(request: NextRequest, { params }: Params) {
   if (!isAdmin(request)) {
@@ -146,3 +192,4 @@ export async function DELETE(request: NextRequest, { params }: Params) {
     conn.release();
   }
 }
+
