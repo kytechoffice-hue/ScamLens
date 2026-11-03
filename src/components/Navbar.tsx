@@ -15,6 +15,7 @@ import {
   Menu, 
   X, 
   Radio,
+  User,
 } from "lucide-react";
 import { MOCK_RECENT_TICKER } from "@/data/mockData";
 
@@ -65,6 +66,7 @@ export default function Navbar() {
     { name: "Scam Directory", href: "/scams", icon: Search },
     { name: "Check Website", href: "/check", icon: Globe },
     { name: "Learn", href: "/learn", icon: BookOpen },
+    ...(user ? [{ name: "My Account", href: "/account", icon: User }] : []),
   ];
 
   const currentTicker = MOCK_RECENT_TICKER[tickerIndex];
@@ -159,13 +161,34 @@ export default function Navbar() {
 
             {/* 🔑 Login / Logout */}
             {user ? (
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all bg-white text-slate-700 border-slate-200 hover:bg-red-50 hover:border-red-300 hover:text-red-700 cursor-pointer"
-              >
-                <LogOut className="w-4 h-4 text-red-500" />
-                <span>Logout</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/account"
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${
+                    pathname === "/account"
+                      ? "bg-amber-50 text-amber-800 border-amber-300 shadow-2xs font-bold"
+                      : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                  }`}
+                  title="View your submitted reports"
+                >
+                  <User className="w-3.5 h-3.5 text-amber-600" />
+                  <span className="max-w-[120px] truncate">{user.fullName || user.username || "My Account"}</span>
+                  {user.role === "admin" && (
+                    <span className="ml-1 px-1.5 py-0.2 rounded bg-[#0a2540] text-white text-[9px] font-mono font-bold">
+                      ADMIN
+                    </span>
+                  )}
+                </Link>
+
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition-all bg-white text-slate-700 border-slate-200 hover:bg-red-50 hover:border-red-300 hover:text-red-700 cursor-pointer"
+                  title="Logout"
+                >
+                  <LogOut className="w-4 h-4 text-red-500" />
+                  <span>Logout</span>
+                </button>
+              </div>
             ) : (
               <Link
                 href="/login"
@@ -198,6 +221,20 @@ export default function Navbar() {
       {/* Mobile Menu Drawer */}
       {mobileMenuOpen && (
         <div className="md:hidden border-b border-slate-200 bg-white px-4 pt-3 pb-6 space-y-2 animate-in slide-in-from-top-4 duration-200 shadow-lg">
+          {user && (
+            <div className="px-4 py-2.5 mb-2 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+              <div className="flex items-center justify-between">
+                <p className="font-bold text-[#0a2540]">{user.fullName || user.username || "My Account"}</p>
+                {user.role === "admin" && (
+                  <span className="px-1.5 py-0.5 rounded bg-[#0a2540] text-white text-[9px] font-mono font-bold">
+                    ADMIN
+                  </span>
+                )}
+              </div>
+              <p className="text-[11px] text-slate-500 font-mono truncate mt-0.5">{user.email}</p>
+            </div>
+          )}
+
           {navLinks.map((link) => {
             const Icon = link.icon;
             const isActive = pathname === link.href;
