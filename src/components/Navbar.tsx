@@ -66,7 +66,6 @@ export default function Navbar() {
     { name: "Scam Directory", href: "/scams", icon: Search },
     { name: "Check Website", href: "/check", icon: Globe },
     { name: "Learn", href: "/learn", icon: BookOpen },
-    ...(user ? [{ name: "My Account", href: "/account", icon: User }] : []),
   ];
 
   const currentTicker = MOCK_RECENT_TICKER[tickerIndex];
