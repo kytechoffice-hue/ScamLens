@@ -5,7 +5,7 @@ import Link from "next/link";
 import {
   PlusCircle, FileText, ChevronLeft, ChevronRight,
   Filter, X, Loader2, AlertCircle, RefreshCw, Trash2, ShieldCheck,
-  Eye, ExternalLink, Image as ImageIcon, File, Maximize2, Download
+  Eye, ExternalLink, Image as ImageIcon, File, Maximize2, Download, UploadCloud
 } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -174,27 +174,62 @@ function EvidenceModal({
   evidence,
   loading,
   error,
+  userRole,
   onClose,
   onOpenLightbox,
+  onEvidenceUpdated,
 }: {
   report: Report;
   evidence: EvidenceItem[];
   loading: boolean;
   error: string;
+  userRole?: string;
   onClose: () => void;
   onOpenLightbox: (url: string) => void;
+  onEvidenceUpdated: (newEvidence: EvidenceItem[]) => void;
 }) {
+  const [uploadingId, setUploadingId] = useState<number | null>(null);
+
   const getFileUrl = (path: string) => {
     if (!path) return "";
-    if (path.startsWith("http://") || path.startsWith("https://")) return path;
-    if (path.startsWith("/")) return path;
-    return `/${path}`;
+    let normalized = path;
+    if (!normalized.startsWith("http://") && !normalized.startsWith("https://")) {
+      normalized = normalized.startsWith("/") ? normalized : `/${normalized}`;
+    }
+    return encodeURI(normalized);
   };
 
   const isImageFile = (item: EvidenceItem) => {
     if (item.mime_type && item.mime_type.startsWith("image/")) return true;
     const ext = item.original_name?.toLowerCase() || "";
     return ext.endsWith(".png") || ext.endsWith(".jpg") || ext.endsWith(".jpeg") || ext.endsWith(".webp") || ext.endsWith(".gif");
+  };
+
+  const handleUploadFile = async (e: React.ChangeEvent<HTMLInputElement>, replaceId?: number) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingId(replaceId ?? -1);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      if (replaceId) formData.append("replaceEvidenceId", String(replaceId));
+
+      const res = await fetch(`/api/reports/${report.id}/evidence`, {
+        method: "POST",
+        headers: { "X-User-Role": userRole || "" },
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.message || "Upload failed");
+      onEvidenceUpdated(data.evidence);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Failed to upload file");
+    } finally {
+      setUploadingId(null);
+      e.target.value = "";
+    }
   };
 
   return (
@@ -204,7 +239,7 @@ function EvidenceModal({
         {/* Modal Header */}
         <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-sky-50 border border-sky-200 flex items-center justify-center text-sky-600">
+            <div className="w-9 h-9 rounded-xl bg-sky-50 border border-sky-200 flex items-center justify-center text-sky-600 shrink-0">
               <ImageIcon className="w-5 h-5" />
             </div>
             <div>
@@ -223,12 +258,25 @@ function EvidenceModal({
               </p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sky-600 text-white text-xs font-bold hover:bg-sky-700 transition-colors shadow-xs">
+              {uploadingId === -1 ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <UploadCloud className="w-3.5 h-3.5" />}
+              <span>{uploadingId === -1 ? "Uploading..." : "+ Attach Evidence"}</span>
+              <input
+                type="file"
+                accept="image/*,.pdf,.doc,.docx"
+                className="hidden"
+                disabled={uploadingId !== null}
+                onChange={(e) => handleUploadFile(e)}
+              />
+            </label>
+            <button
+              onClick={onClose}
+              className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Modal Body */}
@@ -251,7 +299,17 @@ function EvidenceModal({
             <div className="py-16 text-center text-slate-400">
               <File className="w-10 h-10 mx-auto mb-2 text-slate-300" />
               <p className="text-sm font-bold text-slate-700">No Evidence Uploaded</p>
-              <p className="text-xs text-slate-400 mt-1">The user submitted this report without attaching screenshots or files.</p>
+              <p className="text-xs text-slate-400 mt-1 mb-4">No evidence files are attached to this report yet.</p>
+              <label className="cursor-pointer inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#0a2540] text-white text-xs font-bold hover:opacity-90 transition-all">
+                <UploadCloud className="w-4 h-4" />
+                <span>Upload First Evidence File</span>
+                <input
+                  type="file"
+                  accept="image/*,.pdf"
+                  className="hidden"
+                  onChange={(e) => handleUploadFile(e)}
+                />
+              </label>
             </div>
           )}
 
@@ -260,6 +318,7 @@ function EvidenceModal({
               {evidence.map((item) => {
                 const fileUrl = getFileUrl(item.storage_path);
                 const isImg = isImageFile(item);
+                const isItemUploading = uploadingId === item.id;
 
                 return (
                   <div
@@ -279,14 +338,15 @@ function EvidenceModal({
                     {/* Preview Area */}
                     <div className="relative aspect-video bg-slate-100 flex items-center justify-center overflow-hidden">
                       {isImg ? (
-                        <div className="w-full h-full relative cursor-pointer" onClick={() => onOpenLightbox(fileUrl)}>
+                        <div className="w-full h-full relative">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={fileUrl}
                             alt={item.original_name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 cursor-pointer"
+                            onClick={() => onOpenLightbox(fileUrl)}
                             onError={(e) => {
-                              // If file not on disk (e.g. simulated filename), show clean placeholder
+                              // If image file not on disk (e.g. earlier mock records), show clean upload fallback
                               const target = e.currentTarget;
                               target.style.display = "none";
                               const fallback = target.nextElementSibling as HTMLElement;
@@ -296,14 +356,18 @@ function EvidenceModal({
                           {/* Fallback placeholder if image is missing from filesystem */}
                           <div
                             style={{ display: "none" }}
-                            className="w-full h-full absolute inset-0 flex-col items-center justify-center bg-slate-100 text-slate-400 p-4 text-center"
+                            className="w-full h-full absolute inset-0 flex-col items-center justify-center bg-amber-50/50 text-slate-500 p-4 text-center border-b border-amber-200/50"
                           >
-                            <ImageIcon className="w-8 h-8 text-slate-300 mb-1" />
-                            <span className="text-[11px] font-semibold text-slate-600 line-clamp-1">{item.original_name}</span>
-                            <span className="text-[9px] text-slate-400 font-mono mt-0.5">Stored as: {item.storage_path}</span>
+                            <ImageIcon className="w-8 h-8 text-amber-500 mb-1" />
+                            <span className="text-[11px] font-bold text-slate-700 line-clamp-1">{item.original_name}</span>
+                            <span className="text-[10px] text-amber-700 font-medium mt-0.5">Physical file not yet on server</span>
+                            <span className="text-[9px] text-slate-400 mt-1">Click &ldquo;Upload Image&rdquo; below to attach the image</span>
                           </div>
 
-                          <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                          <div
+                            className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 cursor-pointer"
+                            onClick={() => onOpenLightbox(fileUrl)}
+                          >
                             <span className="px-3 py-1.5 rounded-lg bg-black/70 text-white text-xs font-semibold flex items-center gap-1.5 shadow-lg">
                               <Maximize2 className="w-3.5 h-3.5" /> Enlarge
                             </span>
@@ -329,15 +393,30 @@ function EvidenceModal({
                         </p>
                       </div>
 
-                      <a
-                        href={fileUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold transition-colors shrink-0"
-                        title="Open in new window"
-                      >
-                        <ExternalLink className="w-3 h-3" /> Open
-                      </a>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {/* Upload/Replace real image file */}
+                        <label className="cursor-pointer inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-700 text-[11px] font-bold border border-sky-200 transition-colors">
+                          {isItemUploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <UploadCloud className="w-3 h-3" />}
+                          <span>{isItemUploading ? "Saving..." : "Upload File"}</span>
+                          <input
+                            type="file"
+                            accept="image/*,.pdf"
+                            className="hidden"
+                            disabled={isItemUploading}
+                            onChange={(e) => handleUploadFile(e, item.id)}
+                          />
+                        </label>
+
+                        <a
+                          href={fileUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold transition-colors"
+                          title="Open file in new window"
+                        >
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      </div>
                     </div>
                   </div>
                 );
@@ -573,8 +652,10 @@ export default function AccountPage() {
           evidence={evidenceItems}
           loading={evidenceLoading}
           error={evidenceError}
+          userRole={user?.role}
           onClose={() => setEvidenceModalReport(null)}
           onOpenLightbox={(url) => setLightboxUrl(url)}
+          onEvidenceUpdated={(newEvidence) => setEvidenceItems(newEvidence)}
         />
       )}
 
